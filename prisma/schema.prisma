@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                String            @id @default(cuid())
+  email             String            @unique
+  name              String?
+  role              Role              @default(STUDENT)
+  createdAt         DateTime          @default(now())
+  tutorProfile      TutorProfile?
+  requests          TutoringRequest[] @relation("StudentRequests")
+  sessionsAsStudent TutoringSession[] @relation("StudentSessions")
+}
+
+model TutorProfile {
+  id             String                  @id @default(cuid())
+  name           String
+  email          String                  @unique
+  isActive       Boolean                 @default(false)
+  userId         String?                 @unique
+  createdAt      DateTime                @default(now())
+  unavailability AvailabilityException[]
+  availability   RecurringAvailability[]
+  user           User?                   @relation(fields: [userId], references: [id])
+  sessions       TutoringSession[]
+  courses        Course[]                @relation("CourseToTutorProfile")
+}
+
+model Course {
+  id          String            @id @default(cuid())
+  name        String            @unique
+  requests    TutoringRequest[]
+  sessions    TutoringSession[]
+  instructors Instructor[]      @relation("CourseToInstructor")
+  tutors      TutorProfile[]    @relation("CourseToTutorProfile")
+}
+
+model TutoringSession {
+  id        String           @id @default(cuid())
+  tutorId   String
+  studentId String
+  courseId  String
+  start     DateTime
+  end       DateTime
+  status    SessionStatus    @default(SCHEDULED)
+  location  String?
+  createdAt DateTime         @default(now())
+  request   TutoringRequest?
+  course    Course           @relation(fields: [courseId], references: [id])
+  student   User             @relation("StudentSessions", fields: [studentId], references: [id])
+  tutor     TutorProfile     @relation(fields: [tutorId], references: [id])
+
+  @@index([tutorId, start])
+  @@index([studentId, start])
+}
+
+model Instructor {
+  id       String            @id @default(cuid())
+  name     String
+  requests TutoringRequest[]
+  courses  Course[]          @relation("CourseToInstructor")
+}
+
+model TutoringRequest {
+  id           String           @id @default(cuid())
+  fullName     String
+  cwid         String
+  dateRequest  DateTime
+  timeRequest  String
+  errorType    String
+  location     String
+  dssRequire   String
+  courseId     String
+  instructorId String
+  createdById  String
+  sessionId    String?          @unique
+  createdAt    DateTime         @default(now())
+  course       Course           @relation(fields: [courseId], references: [id])
+  createdBy    User             @relation("StudentRequests", fields: [createdById], references: [id])
+  instructor   Instructor       @relation(fields: [instructorId], references: [id])
+  session      TutoringSession? @relation(fields: [sessionId], references: [id])
+}
+
+model RecurringAvailability {
+  id        String       @id @default(cuid())
+  tutorId   String
+  dayOfWeek Int
+  startMin  Int
+  endMin    Int
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  tutor     TutorProfile @relation(fields: [tutorId], references: [id])
+
+  @@index([tutorId, dayOfWeek])
+}
+
+model AvailabilityException {
+  id        String        @id @default(cuid())
+  tutorId   String
+  date      DateTime
+  startMin  Int
+  endMin    Int
+  type      ExceptionType
+  createdAt DateTime      @default(now())
+  tutor     TutorProfile  @relation(fields: [tutorId], references: [id])
+
+  @@index([tutorId, date])
+}
+
+enum Role {
+  STUDENT
+  MANAGER
+  TUTOR
+}
+
+enum SessionStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum ExceptionType {
+  REMOVE
+  ADD
+}
