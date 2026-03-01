@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { createOverride } from "@/lib/availability"
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -16,13 +15,24 @@ export async function GET(req: NextRequest, ctx: Ctx) {
 
 export async function POST(req: NextRequest, ctx: Ctx) {
   const { id: tutorId } = await ctx.params;
+  const { date, startMin, endMin, type } = await req.json();
 
-  const body = await req.json();
-  const date = new Date(body.date);
+  // Parse as local date-only (important!)
+  const dateOnly = new Date(`${date}T00:00:00`);
 
-  const { startMin, endMin, type } = body;
+  if (startMin == null || endMin == null) {
+    return NextResponse.json({ error: "Missing time range" }, { status: 400 });
+  }
 
-  await createOverride(tutorId, date, startMin, endMin, type);
+  await prisma.availabilityException.create({
+    data: {
+      tutorId,
+      date: dateOnly,
+      startMin,
+      endMin,
+      type, // "ADD" or "REMOVE"
+    },
+  });
 
   return NextResponse.json({ success: true });
 }

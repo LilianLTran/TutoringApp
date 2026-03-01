@@ -16,10 +16,20 @@ export async function GET(req: NextRequest, ctx: Ctx) {
 
 export async function POST(req: NextRequest, ctx: Ctx) {
   const { id: tutorId } = await ctx.params;
-
   const { dayOfWeek, startMin, endMin } = await req.json();
 
-  await upsertRecurringAvailability(tutorId, dayOfWeek, startMin, endMin);
+  if (startMin == null || endMin == null) {
+    return NextResponse.json({ error: "Missing time range" }, { status: 400 });
+  }
+
+  await prisma.recurringAvailability.create({
+    data: {
+      tutorId,
+      dayOfWeek,
+      startMin,
+      endMin,
+    },
+  });
 
   return NextResponse.json({ success: true });
 }
