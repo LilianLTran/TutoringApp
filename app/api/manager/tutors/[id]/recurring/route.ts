@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { upsertRecurringAvailability } from "@/lib/availability"
 
 type Ctx = { params: Promise<{ id: string }> };
 

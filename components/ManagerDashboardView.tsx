@@ -109,24 +109,6 @@ export default function ManagerDashboardView({ stats }: Props) {
                 onClick={() => router.push("/dashboard/manager/instructors")}
               />
             </div>
-
-            {/* Recent Activity placeholder */}
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Recent Activity
-                </h2>
-                <button className="text-sm text-gray-600 hover:text-gray-900">
-                  View all
-                </button>
-              </div>
-
-              <div className="mt-4 space-y-3 text-sm text-gray-600">
-                <div className="rounded-xl bg-gray-50 p-3 border border-gray-100">
-                  Activity will appear here (hook up to an audit log when ready).
-                </div>
-              </div>
-            </div>
           </main>
         </div>
       </div>

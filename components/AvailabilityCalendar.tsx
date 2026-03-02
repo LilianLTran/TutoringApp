@@ -53,7 +53,6 @@ function merge(blocks: Block[]): Block[] {
   return res
 }
 
-// ✅ LOCAL YYYY-MM-DD (no toISOString / UTC shifts)
 function dayKey(d: Date) {
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, "0")
@@ -79,7 +78,6 @@ export default function RecurringCalendar({ tutorId }: Props) {
   const [clickedId, setClickedId] = useState<string | null>(null)
   const [clickedKind, setClickedKind] = useState<"RECURRING" | "NONRECURRING" | null>(null)
 
-  // Calendar initial date: if weekend, show next Monday
   const initialDate = useMemo(() => {
     const today = new Date()
     const day = today.getDay()
@@ -96,8 +94,6 @@ export default function RecurringCalendar({ tutorId }: Props) {
       ])
 
       const [recurring, exceptions] = await Promise.all([recRes.json(), exRes.json()])
-
-      // Group recurring by weekday, but keep row id so we can delete recurring by id
       const recByDow = new Map<number, Array<Block & { recurringId: string }>>()
       for (const r of recurring) {
         const arr = recByDow.get(r.dayOfWeek) ?? []
@@ -105,10 +101,8 @@ export default function RecurringCalendar({ tutorId }: Props) {
         recByDow.set(r.dayOfWeek, arr)
       }
 
-      // Group exceptions by LOCAL date key
       const exByDate = new Map<string, any[]>()
       for (const ex of exceptions) {
-        // Prisma often returns ISO string like "2026-03-02T00:00:00.000Z"
         // We only care about local calendar day:
         const k = dayKey(new Date(ex.date))
         const arr = exByDate.get(k) ?? []
@@ -246,7 +240,6 @@ export default function RecurringCalendar({ tutorId }: Props) {
   async function handleAddNonRecurring() {
     if (!selection) return
 
-    // ✅ send date-only string (local)
     await fetch(`/api/manager/tutors/${tutorId}/nonrecurring`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -279,7 +272,6 @@ export default function RecurringCalendar({ tutorId }: Props) {
   async function handleRemoveNonRecurring() {
     if (!selection) return
 
-    // ✅ send date-only string (local)
     await fetch(`/api/manager/tutors/${tutorId}/nonrecurring`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

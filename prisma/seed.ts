@@ -23,7 +23,7 @@ async function main() {
 
   // Clean old data
   await prisma.tutoringSession.deleteMany()
-  await prisma.tutorAvailability.deleteMany()
+  await prisma.availabilityException.deleteMany()
   await prisma.tutorProfile.deleteMany()
   await prisma.user.deleteMany()
   await prisma.course.deleteMany()
@@ -65,22 +65,22 @@ async function main() {
   //
   // Create Availability
   //
-  await prisma.tutorAvailability.createMany({
-    data: [
-      {
-        tutorId: tutorAlice.id,
-        dayOfWeek: 1, // Monday
-        startMin: 9 * 60,
-        endMin: 12 * 60,
-      },
-      {
-        tutorId: tutorBob.id,
-        dayOfWeek: 2, // Tuesday
-        startMin: 13 * 60,
-        endMin: 16 * 60,
-      },
-    ],
-  })
+  // await prisma.availabilityException.createMany({
+  //   data: [
+  //     {
+  //       tutorId: tutorAlice.id,
+  //       date: 1, // Monday
+  //       startMin: 9 * 60,
+  //       endMin: 12 * 60,
+  //     },
+  //     {
+  //       tutorId: tutorBob.id,
+  //       dayOfWeek: 2, // Tuesday
+  //       startMin: 13 * 60,
+  //       endMin: 16 * 60,
+  //     },
+  //   ],
+  // })
 
   //
   // Create Tutor User (simulate signup)
