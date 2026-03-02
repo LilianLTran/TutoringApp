@@ -16,28 +16,70 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async signIn({ profile }) {
-      if (!profile?.email) return false
+      if (!profile?.email) return false;
+
+      const email = profile.email.toLowerCase().trim();
 
       const managerEmails =
-        process.env.MANAGER_EMAILS?.split(",").map(e => e.trim()) ?? []
+        process.env.MANAGER_EMAILS?.split(",").map(e => e.trim().toLowerCase()) ?? [];
 
+      // Check if email exists in TutorProfile
+      const tutorProfile = await prisma.tutorProfile.findUnique({
+        where: { email },
+      });
 
-      const existingUser = await prisma.user.findUnique({
-        where: { email: profile.email },
-      })
+      // Determine role priority
+      let role: "MANAGER" | "TUTOR" | "STUDENT";
 
-      if (!existingUser) {
-        await prisma.user.create({
-          data: {
-            email: profile.email,
-            name: profile.name,
-            role: managerEmails.includes(profile.email)
-              ? "MANAGER"
-              : "STUDENT",          },
-        })
+      if (managerEmails.includes(email)) {
+        role = "MANAGER";
+      } else if (tutorProfile) {
+        role = "TUTOR";
+      } else {
+        role = "STUDENT";
       }
 
-      return true
+      // Check if user already exists
+      const existingUser = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (!existingUser) {
+        const newUser = await prisma.user.create({
+          data: {
+            email,
+            name: profile.name,
+            role,
+          },
+        });
+
+        // If tutor profile exists, link it
+        if (tutorProfile && !tutorProfile.userId) {
+          await prisma.tutorProfile.update({
+            where: { id: tutorProfile.id },
+            data: { userId: newUser.id },
+          });
+        }
+
+      } else {
+        // Update role if needed (for existing users)
+        if (existingUser.role !== role) {
+          await prisma.user.update({
+            where: { id: existingUser.id },
+            data: { role },
+          });
+        }
+
+        // Ensure tutorProfile is linked
+        if (tutorProfile && !tutorProfile.userId) {
+          await prisma.tutorProfile.update({
+            where: { id: tutorProfile.id },
+            data: { userId: existingUser.id },
+          });
+        }
+      }
+
+      return true;
     },
 
     async jwt({ token }) {

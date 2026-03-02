@@ -100,12 +100,6 @@ export default function ManagerCoursesView({
         </p>
       </div>
 
-      {msg && (
-        <div className="rounded-xl border bg-white px-4 py-3 text-sm text-gray-700">
-          {msg}
-        </div>
-      )}
-
       {/* Create */}
       <div className="rounded-2xl border bg-white p-5 shadow-sm">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -124,7 +118,7 @@ export default function ManagerCoursesView({
           <button
             onClick={addCourse}
             disabled={creating || !name.trim()}
-            className="rounded-lg bg-[#99000D] px-4 py-2 text-white disabled:opacity-50"
+            className="h-10 w-40 rounded-lg bg-[#99000D] px-4 py-2 text-white disabled:opacity-50"
           >
             {creating ? "Adding..." : "Add Course"}
           </button>
