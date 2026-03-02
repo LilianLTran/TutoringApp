@@ -1,67 +1,63 @@
-import { prisma } from "@/lib/prisma"
-import CreateRequestForm from "@/components/CreateRequestForm"
-import { revalidatePath } from "next/cache"
+import { prisma } from "@/lib/prisma";
+import { requireRole } from "@/lib/requireRole";
+import StudentDashboardView from "@/components/StudentDashboardView";
 
-export default async function StudentDashboard() {
-  const courses = await prisma.course.findMany({
-    orderBy: {
-      name: "asc",
-    },
-  })
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth"; // adjust path to where your authOptions lives
 
-  const instructors = await prisma.instructor.findMany({
-    include: {
-      courses: {
-        orderBy: { name: "asc" },
-      },
-    },
-    orderBy: { name: "asc" },
-  })
+export const dynamic = "force-dynamic";
 
-  async function createRequest(formData: FormData) {
-    "use server"
+export default async function StudentDashboardPage() {
+  await requireRole("STUDENT");
 
-    const fullName = formData.get("fullName") as string
-    const cwid = formData.get("cwid") as string
-    const courseId = formData.get("courseId") as string
-    const instructorId = formData.get("instructorId") as string
-    const dateRequest = formData.get("dateRequest") as string
-    const timeRequest = formData.get("timeRequest") as string
-    const errorType = formData.get("errorType") as string
-    const location = formData.get("location") as string
-    const dssRequire = formData.get("dssRequire") as string
+  const session = await getServerSession(authOptions);
+  const email = session?.user?.email?.toLowerCase().trim();
 
-    const user = await prisma.user.findFirst()
-
-    if (!user) {
-      throw new Error("User not found")
-    }
-
-    await prisma.tutoringRequest.create({
-      data: {
-        fullName,
-        cwid,
-        courseId,
-        instructorId,
-        dateRequest: new Date(dateRequest),
-        timeRequest,
-        errorType,
-        location,
-        dssRequire,
-        createdById: user.id,
-      },
-    })
-
-    revalidatePath("/student/dashboard")
+  if (!email) {
+    return <div className="p-6">Not authenticated</div>;
   }
 
+  const me = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true, email: true, name: true },
+  });
+
+  if (!me) {
+    return <div className="p-6">User not found</div>;
+  }
+
+  const sessions = await prisma.tutoringSession.findMany({
+    where: { studentId: me.id },
+    orderBy: { start: "desc" },
+    include: {
+      course: { select: { name: true } },
+      tutor: { select: { name: true, email: true } },
+    },
+  });
+
   return (
-    <div className="p-10">
-      <CreateRequestForm
-        courses={courses}
-        instructors={instructors}
-        action={createRequest}
-      />
+    <div className="px-4 pt-10">
+      <div className="max-w-6xl mx-auto space-y-8">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">Student Dashboard</h1>
+          <p className="mt-1 text-sm text-gray-600">
+            Manage your profile, request tutoring, and review your session history.
+          </p>
+        </div>
+
+        <StudentDashboardView
+          user={{ id: me.id, email: me.email, name: me.name ?? "" }}
+          sessions={sessions.map((s) => ({
+            id: s.id,
+            start: s.start.toISOString(),
+            end: s.end.toISOString(),
+            status: s.status,
+            location: s.location ?? "",
+            courseName: s.course.name,
+            tutorName: s.tutor.name,
+          }))}
+        />
+      </div>
     </div>
-  )
+  );
 }
