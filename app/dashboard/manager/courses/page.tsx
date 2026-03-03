@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/requireRole";
-import ManagerCoursesView from "@/components/ManagerCoursesView";
+import ManagerCoursesView from "./ManagerCoursesView";
 
 export default async function ManagerCoursesPage() {
   await requireRole("MANAGER");

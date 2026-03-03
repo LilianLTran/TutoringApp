@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/requireRole";
-import InstructorCoursesEditor from "@/components/InstructorCoursesEditor";
+import InstructorCoursesEditor from "./InstructorCoursesEditor";
 
 export default async function InstructorDetailPage(props: {
   params: Promise<{ id: string }>;

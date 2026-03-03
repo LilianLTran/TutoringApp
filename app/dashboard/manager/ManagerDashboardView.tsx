@@ -1,9 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Users, BookOpen, GraduationCap, Search } from "lucide-react";
-import ActionCard from "@/components/ActionCard";
-import StatTile from "@/components/StatTile";
+import { Users, BookOpen, GraduationCap } from "lucide-react";
+import ActionCard from "./ActionCard";
+import StatTile from "./StatTile";
 
 type Props = {
   stats: {

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import CreateRequestForm from "@/components/CreateRequestForm"
+import CreateRequestForm from "./CreateRequestForm"
 import { revalidatePath } from "next/cache"
 
 export default async function StudentDashboard() {

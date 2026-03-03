@@ -67,7 +67,7 @@ function minsToDate(day: Date, min: number) {
   return d
 }
 
-export default function RecurringCalendar({ tutorId }: Props) {
+export default function AvailabilityCalendar({ tutorId }: Props) {
   const [events, setEvents] = useState<any[]>([])
   const [refreshKey, setRefreshKey] = useState(0)
 
@@ -300,6 +300,32 @@ export default function RecurringCalendar({ tutorId }: Props) {
     setRefreshKey((k) => k + 1)
   }
 
+  function handleEventClick(info: any) {
+    const p: any = info.event.extendedProps
+    const dayOfWeek = p.dayOfWeek ?? info.event.start!.getDay()
+
+    if (p.kind === "RECURRING") {
+      setClickedId(String(p.recurringId))
+      setClickedKind("RECURRING")
+      setModalMode("CLICK_RECURRING")
+    } else {
+      // For nonrecurring blocks created from exceptions, prefer exceptionId if present.
+      setClickedId(String(p.exceptionId ?? info.event.id))
+      setClickedKind("NONRECURRING")
+      setModalMode("CLICK_NONRECURRING")
+    }
+
+    setSelection({
+      dayOfWeek,
+      startMin: p.startMin,
+      endMin: p.endMin,
+      date: info.event.start!,
+    })
+
+    setShowModal(true)
+  }
+  
+
   function closeModal() {
     setShowModal(false)
     setSelection(null)
@@ -334,30 +360,7 @@ export default function RecurringCalendar({ tutorId }: Props) {
             <div className="text-sm font-mono">{arg.timeText}</div>
           </div>
         )}
-        eventClick={(info) => {
-          const p: any = info.event.extendedProps
-          const dayOfWeek = p.dayOfWeek ?? info.event.start!.getDay()
-
-          if (p.kind === "RECURRING") {
-            setClickedId(String(p.recurringId))
-            setClickedKind("RECURRING")
-            setModalMode("CLICK_RECURRING")
-          } else {
-            // For nonrecurring blocks created from exceptions, prefer exceptionId if present.
-            setClickedId(String(p.exceptionId ?? info.event.id))
-            setClickedKind("NONRECURRING")
-            setModalMode("CLICK_NONRECURRING")
-          }
-
-          setSelection({
-            dayOfWeek,
-            startMin: p.startMin,
-            endMin: p.endMin,
-            date: info.event.start!,
-          })
-
-          setShowModal(true)
-        }}
+        eventClick={handleEventClick}
       />
 
       <style jsx global>{`

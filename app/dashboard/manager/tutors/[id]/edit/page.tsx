@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import TutorEditForm from "@/components/TutorEditForm";
+import TutorEditForm from "./TutorEditForm";
 
 type PageProps = {
   params: Promise<{ id: string }>;

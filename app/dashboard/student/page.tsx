@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/requireRole";
-import StudentDashboardView from "@/components/StudentDashboardView";
+import StudentDashboardView from "./StudentDashboardView";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth"; // adjust path to where your authOptions lives

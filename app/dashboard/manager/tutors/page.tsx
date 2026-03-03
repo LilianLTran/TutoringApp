@@ -1,8 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import TutorsView from "@/components/ManagerTutorsView";
+import ManagerTutorsView from "./ManagerTutorsView";
 import { requireRole } from "@/lib/requireRole";
-
-export const dynamic = "force-dynamic"; // optional, safe for manager pages
 
 export default async function TutorsPage() {
   await requireRole("MANAGER");
@@ -21,7 +19,7 @@ export default async function TutorsPage() {
       <div className="max-w-5xl mx-auto">
         {/* TutorsView is a client component that receives server data as initial state */}
         {/* Passing minimal fields to keep payload small */}
-        <TutorsView
+        <ManagerTutorsView
           initialTutors={tutors.map((t) => ({
             id: t.id,
             name: t.name,

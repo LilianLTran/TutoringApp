@@ -1,4 +1,4 @@
-import ManagerDashboardView from "@/components/ManagerDashboardView";
+import ManagerDashboardView from "./ManagerDashboardView";
 import { prisma } from "@/lib/prisma";
 
 export default async function ManagerDashboardPage() {

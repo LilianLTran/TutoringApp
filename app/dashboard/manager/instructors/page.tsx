@@ -1,8 +1,8 @@
-export const dynamic = "force-dynamic";
-
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/requireRole";
-import ManagerInstructorsView from "@/components/ManagerInstructorsView";
+import ManagerInstructorsView from "./ManagerInstructorsView";
+
+export const dynamic = "force-dynamic";
 
 export default async function ManagerInstructorsPage() {
   await requireRole("MANAGER");

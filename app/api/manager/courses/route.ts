@@ -65,15 +65,6 @@ export async function DELETE(req: NextRequest) {
   await prisma.$transaction(async (tx) => {
     await tx.tutoringSession.deleteMany({ where: { courseId: id } });
     await tx.tutoringRequest.deleteMany({ where: { courseId: id } });
-
-    await tx.course.update({
-      where: { id },
-      data: {
-        tutors: { set: [] },
-        instructors: { set: [] },
-      },
-    });
-
     await tx.course.delete({ where: { id } });
   });
 

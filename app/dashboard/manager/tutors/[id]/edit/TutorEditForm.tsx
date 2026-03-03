@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 import CoursePanel from "./CoursePanel";
 
 type Course = { id: string; name: string };
@@ -26,6 +28,8 @@ export default function TutorEditForm({ tutor, allCourses }: Props) {
   const [savingCourses, setSavingCourses] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
+  const router = useRouter();
+
   async function saveBasic() {
     setMsg(null);
     setSavingBasic(true);
@@ -38,6 +42,7 @@ export default function TutorEditForm({ tutor, allCourses }: Props) {
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error ?? "Failed to save basic info");
       setMsg("Basic info saved.");
+      router.refresh();
     } catch (e: any) {
       setMsg(e.message ?? "Failed to save basic info");
     } finally {
@@ -57,6 +62,7 @@ export default function TutorEditForm({ tutor, allCourses }: Props) {
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error ?? "Failed to save courses");
       setMsg("Courses updated.");
+      router.refresh();
     } catch (e: any) {
       setMsg(e.message ?? "Failed to save courses");
     } finally {
