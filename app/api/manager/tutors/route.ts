@@ -3,6 +3,8 @@ import { NextResponse } from "next/server"
 import { requireRole } from "@/lib/requireRole"
 
 export async function POST(req: Request) {
+  await requireRole("MANAGER")
+  
   const body = await req.json()
 
   const tutor = await prisma.tutorProfile.create({

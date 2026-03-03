@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { requireRole } from "@/lib/requireRole";
 
 type Ctx = { params: Promise<{ id: string }> };
 
 export async function GET(req: NextRequest, ctx: Ctx) {
+  await requireRole("MANAGER")
+  
   const { id: tutorId } = await ctx.params;
 
   const data = await prisma.availabilityException.findMany({
@@ -14,6 +17,8 @@ export async function GET(req: NextRequest, ctx: Ctx) {
 }
 
 export async function POST(req: NextRequest, ctx: Ctx) {
+  await requireRole("MANAGER")
+  
   const { id: tutorId } = await ctx.params;
   const { date, startMin, endMin, type } = await req.json();
 
@@ -38,7 +43,10 @@ export async function POST(req: NextRequest, ctx: Ctx) {
 }
 
 export async function DELETE(req: NextRequest, ctx: Ctx) {
+  await requireRole("MANAGER")
+
   const body = await req.json()
   await prisma.availabilityException.delete({ where: { id: body.id } })
+  
   return NextResponse.json({ success: true })
 }

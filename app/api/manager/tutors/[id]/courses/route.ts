@@ -4,7 +4,6 @@ import { requireRole } from "@/lib/requireRole";
 
 type Ctx = { params: Promise<{ id: string }> };
 
-// GET /api/manager/tutors/:id/courses
 export async function GET(req: NextRequest, ctx: Ctx) {
   await requireRole("MANAGER");
   const { id: tutorId } = await ctx.params;
@@ -21,7 +20,6 @@ export async function GET(req: NextRequest, ctx: Ctx) {
   return NextResponse.json({ courses: tutor.courses });
 }
 
-// PATCH /api/manager/tutors/:id/courses  { courseIds: string[] }
 export async function PATCH(req: NextRequest, ctx: Ctx) {
   await requireRole("MANAGER");
   const { id: tutorId } = await ctx.params;
