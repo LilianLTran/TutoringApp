@@ -6,7 +6,8 @@ import interactionPlugin from "@fullcalendar/interaction"
 import { useEffect, useMemo, useState } from "react"
 
 import TutorTimeEditModal, { ModalMode } from "./TutorTimeEditModal"
-import { subtract } from "@/lib/timeBlocks"
+import { subtractMany } from "@/lib/timeBlocks"
+import { dayKey, minsToDate } from "@/lib/dateNormalization"
 
 const RECURRING_COLOR = "#CC1A1F"
 const NON_RECURRING_COLOR = "#E04B4F"
@@ -23,24 +24,6 @@ type SelectionInfo = {
 }
 
 type Block = { startMin: number; endMin: number }
-
-function overlaps(a: Block, b: Block) {
-  return a.startMin < b.endMin && a.endMin > b.startMin
-}
-
-function dayKey(d: Date) {
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, "0")
-  const day = String(d.getDate()).padStart(2, "0")
-  return `${y}-${m}-${day}`
-}
-
-function minsToDate(day: Date, min: number) {
-  const d = new Date(day)
-  d.setHours(0, 0, 0, 0)
-  d.setMinutes(min)
-  return d
-}
 
 export default function AvailabilityCalendar({ tutorId }: Props) {
   const [events, setEvents] = useState<any[]>([])
@@ -108,36 +91,14 @@ export default function AvailabilityCalendar({ tutorId }: Props) {
 
         const adds = dayExceptions.filter((ex) => ex.type === "ADD")
 
-
         for (const baseBlock of base) {
           // Start with the recurring block as the base
           let blocks: Block[] = [{ startMin: baseBlock.startMin, endMin: baseBlock.endMin }]
 
-          // // Apply REMOVE exceptions by subtracting from the recurring block
-          // for (const ex of dayExceptions) {
-          //   if (ex.type === "REMOVE") {
-          //     blocks = subtract(blocks, { startMin: ex.startMin, endMin: ex.endMin })
-          //   }
-          // }
-
-          // // Apply ADD exceptions by merging into the blocks for that day
-          // const adds: Block[] = dayExceptions
-          //   .filter((ex) => ex.type === "ADD")
-          //   .map((ex) => ({ startMin: ex.startMin, endMin: ex.endMin }))
-
-          // // blocks = merge([...blocks, ...adds])
-          // blocks = [...blocks, ...adds]
-
-          for (const cut of removes) {
-            blocks = subtract(blocks, cut)
-          }
+          blocks = subtractMany(blocks, removes)
 
           // Convert remaining blocks into events
           for (const b of blocks) {
-            // If a block exactly matches an ADD exception, color it as NON_RECURRING_COLOR (optional)
-            // const isAdd = adds.some((a) => a.startMin === b.startMin && a.endMin === b.endMin)
-            // const color = isAdd ? NON_RECURRING_COLOR : RECURRING_COLOR
-
             out.push({
               id: `occ:${baseBlock.recurringId}:${k}:${b.startMin}:${b.endMin}`,
               start: minsToDate(day, b.startMin),

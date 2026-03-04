@@ -37,20 +37,20 @@ export default async function StudentDashboard() {
       throw new Error("User not found")
     }
 
-    await prisma.tutoringRequest.create({
-      data: {
-        fullName,
-        cwid,
-        courseId,
-        instructorId,
-        dateRequest: new Date(dateRequest),
-        timeRequest,
-        errorType,
-        location,
-        dssRequire,
-        createdById: user.id,
-      },
-    })
+    // await prisma.tutoringRequest.create({
+    //   data: {
+    //     fullName,
+    //     cwid,
+    //     courseId,
+    //     instructorId,
+    //     dateRequest: new Date(dateRequest),
+    //     timeRequest,
+    //     errorType,
+    //     location,
+    //     dssRequire,
+    //     createdById: user.id,
+    //   },
+    // })
 
     revalidatePath("/student/dashboard")
   }

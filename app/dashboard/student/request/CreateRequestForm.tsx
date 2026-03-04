@@ -1,27 +1,49 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo } from "react";
+import { useEffect, useState } from "react";
+
 import { 
   ERROR_OPTIONS,
   LOCATION_OPTIONS, 
-  DSS_OPTIONS 
-} from "@/lib/constants/requestOptions"
+  DSS_OPTIONS
+} from "@/lib/constants/requestOptions";
 
 type Course = {
   id: string
   name: string
-}
+};
 
 type Instructor = {
   id: string
   name: string
   courses: { id: string; name: string }[]
-}
+};
 
 type Props = {
   courses: Course[]
   instructors: Instructor[]
   action: (formData: FormData) => void
+};
+
+type TutorSlots = {
+  tutorId: string;
+  tutorName: string;
+  slots: { startMin: number; endMin: number }[];
+};
+
+function minutesToLabel(min: number) {
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
+// helper to convert Date -> yyyy-mm-dd local
+function toDateOnlyStringLocal(d: Date) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
 export default function CreateRequestForm({
@@ -29,6 +51,15 @@ export default function CreateRequestForm({
   instructors,
   action,
 }: Props) {
+
+  const [selectedCourse, setSelectedCourse] = useState<string>("");
+  const [selectedInstructor, setSelectedInstructor] = useState<string>("");
+  const [selectedDateISO, setSelectedDateISO] = useState<string>(""); 
+    // store date as "YYYY-MM-DD" (see below)
+  const [slotsByTutor, setSlotsByTutor] = useState<TutorSlots[] | null>(null);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [selectedTutorId, setSelectedTutorId] = useState<string | null>(null);
+  const [selectedStartMin, setSelectedStartMin] = useState<number | null>(null);
 
   const weekDates = useMemo(() => {
     const today = new Date()
@@ -47,7 +78,7 @@ export default function CreateRequestForm({
         return day !== 0 && day !== 6
       })
       .map((date) => ({
-        value: date.toISOString(),
+        value: toDateOnlyStringLocal(date),
         label: date.toLocaleDateString("en-US", {
           weekday: "short",
           month: "numeric",
@@ -56,11 +87,44 @@ export default function CreateRequestForm({
       }))
   }, [])
 
-  const timeSlots = Array.from({ length: 15 }, (_, i) => {
-    const hour = 10 + Math.floor(i / 2)
-    const minute = i % 2 === 0 ? "00" : "30"
-    return `${hour.toString().padStart(2, "0")}:${minute}`
-  })
+  useEffect(() => {
+    // fetch only when course+date selected
+    if (!selectedCourse || !selectedDateISO) {
+      setSlotsByTutor(null);
+      return;
+    }
+
+    let mounted = true;
+    setLoadingSlots(true);
+    setSlotsByTutor(null);
+
+    (async () => {
+      try {
+        const params = new URLSearchParams({
+          courseId: selectedCourse,
+          date: selectedDateISO.slice(0, 10),
+        });
+        const res = await fetch(`/api/student/slots?${params}`);
+        const data = await res.json();
+        console.log("slots response", data);
+        if (!res.ok) throw new Error(data?.error ?? "Failed to fetch slots");
+        if (!mounted) return;
+        setSlotsByTutor(data.tutors ?? []);
+      } catch (e:any) {
+        console.error(e);
+        if (mounted) setSlotsByTutor([]);
+      } finally {
+        if (mounted) setLoadingSlots(false);
+      }
+    })();
+
+    return () => { mounted = false; };
+  }, [selectedCourse, selectedDateISO]);
+
+
+  async function handleSubmit() {
+
+  }
 
   return (
     <div className="w-full min-h-screen sm:min-h-0 sm:max-w-2xl mx-auto
@@ -113,6 +177,16 @@ export default function CreateRequestForm({
             name="courseId"
             required
             defaultValue=""
+            onChange={(e) => {
+              setSelectedCourse(e.target.value);
+              // clear slots/tutor selection when course changes
+              setSelectedTutorId(null);
+              setSelectedStartMin(null);
+              setSlotsByTutor(null);
+              // also reset selected instructor because course change may 
+              // change options
+              setSelectedInstructor("");
+            }}
             className="w-full border rounded-xl px-4 py-3
               focus:ring-2 focus:ring-[#99000D]
               text-black invalid:text-gray-400"
@@ -166,6 +240,10 @@ export default function CreateRequestForm({
             className="w-full border rounded-xl px-4 py-3
               focus:ring-2 focus:ring-[#99000D]
               text-black invalid:text-gray-400"
+            onChange={(e) => {
+              setSelectedDateISO(e.target.value);
+              setSelectedTutorId(null); setSelectedStartMin(null);
+            }}
           >
             <option value="" disabled>Select Date</option>
             {weekDates.map((d) => (
@@ -176,27 +254,51 @@ export default function CreateRequestForm({
           </select>
         </div>
 
-        {/* Time */}
-        <div>
+        {/* Time slot picker */}
+        <div className="mt-4">
           <label className="block text-sm font-semibold mb-2">
-            At what time? (Please sign up at lease two hours in advance, 
-            one session per day)
+            Available slots
           </label>
-          <select
-            name="timeRequest"
-            required
-            defaultValue=""
-            className="w-full border rounded-xl px-4 py-3
-              focus:ring-2 focus:ring-[#99000D]
-              text-black invalid:text-gray-400"
-          >
-            <option value="" disabled>Select Time</option>
-            {timeSlots.map((time) => (
-              <option key={time} value={time}>
-                {time}
-              </option>
-            ))}
-          </select>
+
+          {loadingSlots && 
+            <div className="text-sm text-gray-500">
+              Loading slots…
+            </div>
+          }
+
+          {!loadingSlots && slotsByTutor && slotsByTutor.length === 0 && (
+            <div className="text-sm text-gray-500">
+              No slots available for this date & course.
+            </div>
+          )}
+
+          {!loadingSlots && slotsByTutor && slotsByTutor.map((t) => (
+            <div key={t.tutorId} className="mb-3">
+              <div className="text-sm font-medium mb-2 font-mono">{t.tutorName}</div>
+              <div className="flex flex-wrap gap-2">
+                {t.slots.map((s) => {
+                  const isSelected = 
+                    selectedTutorId === t.tutorId && 
+                    selectedStartMin === s.startMin;
+                  return (
+                    <button
+                      key={`${t.tutorId}-${s.startMin}`}
+                      type="button"
+                      onClick={() => {
+                        setSelectedTutorId(t.tutorId);
+                        setSelectedStartMin(s.startMin);
+                      }}
+                      className={`px-3 py-1 rounded-lg text-sm border 
+                        ${isSelected ? "bg-[#99000D] text-white" : 
+                          "bg-white text-gray-700"}`}
+                    >
+                      {minutesToLabel(s.startMin)}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Error Type */}
@@ -279,6 +381,7 @@ export default function CreateRequestForm({
 
         <button
           type="submit"
+          // onClick={handleSubmit}
           className="w-full bg-[#99000D] text-white py-3 
             rounded-2xl font-semibold"
         >

@@ -23,6 +23,14 @@ export function subtract(blocks: Block[], cut: Block): Block[] {
   return out;
 }
 
+export function subtractMany(blocks: Block[], cuts: Block[]): Block[] {
+  let cur = blocks
+  for (const cut of cuts) {
+    cur = subtract(cur, cut)
+  }
+  return cur
+}
+
 export function merge(blocks: Block[], touch = true): Block[] {
   if (blocks.length <= 1) return blocks;
 

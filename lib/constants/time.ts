@@ -1,0 +1,1 @@
+export const TIME_SLOT = 30 as const // Changing this will break the code due to calendar input

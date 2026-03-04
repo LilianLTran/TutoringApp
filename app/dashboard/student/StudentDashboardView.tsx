@@ -5,8 +5,8 @@ import { useMemo, useState } from "react";
 
 type SessionRow = {
   id: string;
-  start: string;
-  end: string;
+  start: number;
+  end: number;
   status: string;
   location: string;
   courseName: string;
@@ -160,7 +160,9 @@ export default function StudentDashboardView({ user, sessions }: Props) {
               {sorted.map((s) => (
                 <tr key={s.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 text-gray-900 font-medium">
-                    {fmt(s.start)} – {new Date(s.end).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+
+                    What's this???????????/
+                    {/* {fmt(s.start)} – {new Date(s.end).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })} */}
                   </td>
                   <td className="px-4 py-3 text-gray-700">{s.courseName}</td>
                   <td className="px-4 py-3 text-gray-700">{s.tutorName}</td>

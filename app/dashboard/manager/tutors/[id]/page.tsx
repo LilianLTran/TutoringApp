@@ -17,7 +17,7 @@ export default async function TutorDetailPage(props: {
       courses: true,
       availability: true,
       sessions: {
-        orderBy: { start: "desc" },
+        orderBy: { startMin: "desc" },
       },
     },
   })

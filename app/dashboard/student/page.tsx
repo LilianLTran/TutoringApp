@@ -28,7 +28,7 @@ export default async function StudentDashboardPage() {
 
   const sessions = await prisma.tutoringSession.findMany({
     where: { studentId: me.id },
-    orderBy: { start: "desc" },
+    orderBy: { startMin: "desc" },
     include: {
       course: { select: { name: true } },
       tutor: { select: { name: true, email: true } },
@@ -49,8 +49,8 @@ export default async function StudentDashboardPage() {
           user={{ id: me.id, email: me.email, name: me.name ?? "" }}
           sessions={sessions.map((s) => ({
             id: s.id,
-            start: s.start.toISOString(),
-            end: s.end.toISOString(),
+            start: s.startMin,
+            end: s.endMin,
             status: s.status,
             location: s.location ?? "",
             courseName: s.course.name,

@@ -45,8 +45,9 @@ model TutoringSession {
   tutorId   String
   studentId String
   courseId  String
-  start     DateTime
-  end       DateTime
+  date      DateTime
+  startMin  Int
+  endMin    Int
   status    SessionStatus    @default(SCHEDULED)
   location  String?
   createdAt DateTime         @default(now())
@@ -55,8 +56,9 @@ model TutoringSession {
   student   User             @relation("StudentSessions", fields: [studentId], references: [id])
   tutor     TutorProfile     @relation(fields: [tutorId], references: [id])
 
-  @@index([tutorId, start])
-  @@index([studentId, start])
+  @@unique([tutorId, date, startMin])
+  @@index([tutorId, date])
+  @@index([studentId, date])
 }
 
 model Instructor {
@@ -71,7 +73,7 @@ model TutoringRequest {
   fullName     String
   cwid         String
   dateRequest  DateTime
-  timeRequest  String
+  startMin     Int
   errorType    String
   location     String
   dssRequire   String
