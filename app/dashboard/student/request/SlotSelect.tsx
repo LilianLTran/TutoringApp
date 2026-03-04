@@ -12,32 +12,27 @@ function minutesToLabel(min: number) {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
-export default function SlotSelect({
-  slotsByTutor,
-  loading,
-  selectedTutorId,
-  selectedStartMin,
-  onPick,
-}: {
+type Props = {
+  loadingSlots: boolean;
   slotsByTutor: TutorSlots[] | null;
-  loading: boolean;
   selectedTutorId: string | null;
   selectedStartMin: number | null;
   onPick: (tutorId: string, startMin: number) => void;
-}) {
-  if (loading) return <div className="text-sm text-gray-500">Loading slots…</div>;
-  if (!slotsByTutor) return null;
+};
 
-  if (slotsByTutor.length === 0) {
-    return <div className="text-sm text-gray-500">No slots available for this date & course.</div>;
-  }
-
+export default function SlotSelect({
+  slotsByTutor,
+  loadingSlots,
+  selectedTutorId,
+  selectedStartMin,
+  onPick,
+}: Props) {
   return (
     <div className="mt-4">
       <label className="block text-sm font-semibold mb-2">
         Available slots
       </label>
-      {/* {loadingSlots && <div className="text-sm text-gray-500">Loading slots…</div>}
+      {loadingSlots && <div className="text-sm text-gray-500">Loading slots…</div>}
 
       {!loadingSlots && slotsByTutor && slotsByTutor.length === 0 && (
         <div className="text-sm text-gray-500">No slots available for this date & course.</div>
@@ -53,10 +48,7 @@ export default function SlotSelect({
                 <button
                   key={`${t.tutorId}-${s.startMin}`}
                   type="button"
-                  onClick={() => {
-                    setSelectedTutorId(t.tutorId);
-                    setSelectedStartMin(s.startMin);
-                  }}
+                  onClick={() => onPick(t.tutorId, s.startMin)}
                   className={`px-3 py-1 rounded-lg text-sm border ${isSelected ? "bg-[#99000D] text-white" : "bg-white text-gray-700"}`}
                 >
                   {minutesToLabel(s.startMin)}
@@ -65,7 +57,7 @@ export default function SlotSelect({
             })}
           </div>
         </div>
-      ))} */}
+      ))}
 
     </div>
   );
