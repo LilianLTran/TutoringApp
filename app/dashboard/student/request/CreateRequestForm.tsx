@@ -3,6 +3,8 @@
 import { useMemo } from "react";
 import { useEffect, useState } from "react";
 
+import { submitTutoringRequest } from "./actions";
+
 import { 
   ERROR_OPTIONS,
   LOCATION_OPTIONS, 
@@ -54,6 +56,12 @@ export default function CreateRequestForm({
 
   const [selectedCourse, setSelectedCourse] = useState<string>("");
   const [selectedInstructor, setSelectedInstructor] = useState<string>("");
+  const [fullName, setFullName] = useState("");
+  const [cwid, setCwid] = useState("");
+  const [errorType, setErrorType] = useState("");
+  const [location, setLocation] = useState("");
+  const [dssRequire, setDssRequire] = useState("");
+
   const [selectedDateISO, setSelectedDateISO] = useState<string>(""); 
     // store date as "YYYY-MM-DD" (see below)
   const [slotsByTutor, setSlotsByTutor] = useState<TutorSlots[] | null>(null);
@@ -122,9 +130,36 @@ export default function CreateRequestForm({
   }, [selectedCourse, selectedDateISO]);
 
 
-  async function handleSubmit() {
-
+async function handleSubmit(e: React.MouseEvent<HTMLButtonElement>) {
+  if (!selectedTutorId || selectedStartMin == null || !selectedDateISO) {
+    alert("Please select a tutor and time slot.");
+    return;
   }
+
+  if (!fullName || !cwid || !selectedCourse || !selectedInstructor) {
+    alert("Please fill all required fields.");
+    return;
+  }
+
+  try {
+    await submitTutoringRequest({
+      fullName,
+      cwid,
+      courseId: selectedCourse,
+      instructorId: selectedInstructor,
+      errorType,
+      location,
+      dssRequire,
+      tutorId: selectedTutorId,
+      startMin: selectedStartMin,
+      dateKey: selectedDateISO,
+    });
+
+    alert("Request submitted successfully!");
+  } catch (err: any) {
+    alert(err?.message ?? "Submission failed.");
+  }
+}
 
   return (
     <div className="w-full min-h-screen sm:min-h-0 sm:max-w-2xl mx-auto
@@ -149,6 +184,9 @@ export default function CreateRequestForm({
             className="w-full border rounded-xl px-4 py-3
               focus:ring-2 focus:ring-[#99000D]
               text-black placeholder:text-gray-400"
+            onChange={(e) => {
+              setFullName(e.target.value)
+            }}
           />
         </div>
 
@@ -165,6 +203,9 @@ export default function CreateRequestForm({
             className="w-full border rounded-xl px-4 py-3
               focus:ring-2 focus:ring-[#99000D]
               text-black placeholder:text-gray-400"
+            onChange={(e) =>
+              setCwid(e.target.value)
+            }
           />
         </div>
 
@@ -212,6 +253,9 @@ export default function CreateRequestForm({
             className="w-full border rounded-xl px-4 py-3
               focus:ring-2 focus:ring-[#99000D]
               text-black invalid:text-gray-400"
+            onChange={(e) => {
+              setSelectedInstructor(e.target.value)
+            }}
           >
             <option value="" disabled>Select Instructor</option>
             {instructors.map((instructor) => {
@@ -242,7 +286,8 @@ export default function CreateRequestForm({
               text-black invalid:text-gray-400"
             onChange={(e) => {
               setSelectedDateISO(e.target.value);
-              setSelectedTutorId(null); setSelectedStartMin(null);
+              setSelectedTutorId(null); 
+              setSelectedStartMin(null);
             }}
           >
             <option value="" disabled>Select Date</option>
@@ -313,6 +358,9 @@ export default function CreateRequestForm({
             className="w-full border border-gray-300 rounded-xl px-4 py-3
               focus:ring-2 focus:ring-[#99000D]
               text-black invalid:text-gray-400"
+            onChange={(e) => {
+              setErrorType(e.target.value)
+            }}
           >
             <option value="" disabled>
               Select Type of Help
@@ -338,6 +386,9 @@ export default function CreateRequestForm({
             className="w-full border border-gray-300 rounded-xl px-4 py-3
               focus:ring-2 focus:ring-[#99000D]
               text-black invalid:text-gray-400"
+            onChange={(e) => {
+              setLocation(e.target.value)
+            }}
           >
             <option value="" disabled>
               Select Location
@@ -366,6 +417,9 @@ export default function CreateRequestForm({
             className="w-full border border-gray-300 rounded-xl px-4 py-3
               focus:ring-2 focus:ring-[#99000D]
               text-black invalid:text-gray-400"
+            onChange={(e) => {
+              setDssRequire(e.target.value)
+            }}
           >
             <option value="" disabled>
               Select DSS Requirement
@@ -381,7 +435,7 @@ export default function CreateRequestForm({
 
         <button
           type="submit"
-          // onClick={handleSubmit}
+          onClick={handleSubmit}
           className="w-full bg-[#99000D] text-white py-3 
             rounded-2xl font-semibold"
         >
