@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 
 type SessionRow = {
   id: string;
+  date: Date;
   start: number;
   end: number;
   status: string;
@@ -18,15 +19,19 @@ type Props = {
   sessions: SessionRow[];
 };
 
-function fmt(dtIso: string) {
-  const d = new Date(dtIso);
-  return d.toLocaleString("en-US", {
-    month: "short",
-    day: "2-digit",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
+function fmt(minFromMn: number) {
+  let period;
+  let h = Math.floor(minFromMn / 60);
+  if (h > 12) {
+    h = h % 12;
+    period = "PM"
+  } else {
+    period = "AM"
+  }
+  const m = minFromMn % 60;
+  const hStr = String(h).padStart(2, "0");
+  const mStr = String(m).padStart(2, "0");
+  return `${hStr}:${mStr} ${period}`;
 }
 
 function statusPill(status: string) {
@@ -48,7 +53,14 @@ export default function StudentDashboardView({ user, sessions }: Props) {
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
-  const sorted = useMemo(() => sessions, [sessions]);
+  const sorted = useMemo(() => {
+    return [...sessions].sort((a, b) => {
+      if (a.date < b.date) return -1;
+      if (a.date > b.date) return 1;
+
+      return a.start - b.start;
+    });
+  }, [sessions]);
 
   async function saveName() {
     setMsg(null);
@@ -150,6 +162,7 @@ export default function StudentDashboardView({ user, sessions }: Props) {
             <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-600">
               <tr>
                 <th className="px-4 py-3">Date</th>
+                <th className="px-4 py-3">Time</th>
                 <th className="px-4 py-3">Course</th>
                 <th className="px-4 py-3">Tutor</th>
                 <th className="px-4 py-3">Status</th>
@@ -160,9 +173,10 @@ export default function StudentDashboardView({ user, sessions }: Props) {
               {sorted.map((s) => (
                 <tr key={s.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 text-gray-900 font-medium">
-
-                    What's this???????????/
-                    {/* {fmt(s.start)} – {new Date(s.end).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })} */}
+                     {s.date.toISOString().slice(0, 10)}
+                  </td>
+                   <td className="px-4 py-3 text-gray-900 font-medium">
+                     {fmt(s.start)} — {fmt(s.end)}
                   </td>
                   <td className="px-4 py-3 text-gray-700">{s.courseName}</td>
                   <td className="px-4 py-3 text-gray-700">{s.tutorName}</td>

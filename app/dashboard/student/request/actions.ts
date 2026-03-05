@@ -54,7 +54,8 @@ export async function submitTutoringRequest(data: {
   const endMin = startMin + 30;
 
   // (Optional but recommended) validate slot is actually available
-  // e.g. call your computeTutorAvailableSlots(tutorId, dateOnly) and confirm it contains startMin
+  // e.g. call your computeTutorAvailableSlots(tutorId, dateOnly) and 
+  // confirm it contains startMin
 
   let created: {
     requestId: string;
@@ -63,6 +64,7 @@ export async function submitTutoringRequest(data: {
     tutorName: string;
   } | null = null;
 
+  let createdSessionId: string | null = null;
   try {
     created = await prisma.$transaction(async (tx) => {
       // create session first (protected by @@unique([tutorId,date,startMin]))
@@ -82,6 +84,7 @@ export async function submitTutoringRequest(data: {
           course: { select: { name: true } },
         },
       });
+      createdSessionId = newSession.id;
 
       // create request linked to this session
       const newRequest = await tx.tutoringRequest.create({
@@ -109,13 +112,21 @@ export async function submitTutoringRequest(data: {
     });
   } catch (err: any) {
     // Prisma unique constraint error -> slot already taken
+    if (createdSessionId) {
+      await prisma.tutoringSession.update({
+        where: { id: createdSessionId },
+        data: {status: "CANCELLED" },
+      });
+    }
     if (err?.code === "P2002") {
-      throw new Error("That slot was just booked by someone else. Please pick another one.");
+      throw new Error(
+        "That slot was just booked by someone else. Please pick another one."
+      );
     }
     throw err;
   }
 
-  // ✅ Only email after DB success
+  // Only email after DB success
   // await Promise.all([
   //   sendStudentEmail({
   //     to: me.email,
@@ -137,5 +148,6 @@ export async function submitTutoringRequest(data: {
   // ]);
 
   revalidatePath("/dashboard/student"); // or wherever history shows
-  return { ok: true, requestId: created.requestId, sessionId: created.sessionId };
+  return { ok: true, requestId: created.requestId, 
+    sessionId: created.sessionId };
 }

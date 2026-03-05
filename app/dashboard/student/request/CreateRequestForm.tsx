@@ -37,13 +37,7 @@ type TutorSlots = {
   slots: { startMin: number; endMin: number }[];
 };
 
-function minutesToLabel(min: number) {
-  const h = Math.floor(min / 60);
-  const m = min % 60;
-  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-}
-
-// helper to convert Date -> yyyy-mm-dd local
+// Convert Date -> YYYY-MM-DD local
 function toDateOnlyStringLocal(d: Date) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -66,7 +60,7 @@ export default function CreateRequestForm({
   const [dssRequire, setDssRequire] = useState("");
 
   const [selectedDateISO, setSelectedDateISO] = useState<string>(""); 
-    // store date as "YYYY-MM-DD" (see below)
+    // Store date as "YYYY-MM-DD" (see below)
   const [slotsByTutor, setSlotsByTutor] = useState<TutorSlots[] | null>(null);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [selectedTutorId, setSelectedTutorId] = useState<string | null>(null);
@@ -136,7 +130,7 @@ export default function CreateRequestForm({
   function handleChangeCwid(value: string) { setCwid(value); }
   function handleChangeCourse(value: string) {
     setSelectedCourse(value);
-    // clear slots/tutor selection when course changes
+    // Clear slots/tutor selection when course changes
     setSelectedTutorId(null);
     setSelectedStartMin(null);
     setSlotsByTutor(null);

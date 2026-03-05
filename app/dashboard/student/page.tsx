@@ -49,6 +49,7 @@ export default async function StudentDashboardPage() {
           user={{ id: me.id, email: me.email, name: me.name ?? "" }}
           sessions={sessions.map((s) => ({
             id: s.id,
+            date: s.date,
             start: s.startMin,
             end: s.endMin,
             status: s.status,

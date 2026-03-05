@@ -56,7 +56,6 @@ model TutoringSession {
   student   User             @relation("StudentSessions", fields: [studentId], references: [id])
   tutor     TutorProfile     @relation(fields: [tutorId], references: [id])
 
-  @@unique([tutorId, date, startMin])
   @@index([tutorId, date])
   @@index([studentId, date])
 }
@@ -112,6 +111,19 @@ model AvailabilityException {
   tutor     TutorProfile  @relation(fields: [tutorId], references: [id])
 
   @@index([tutorId, date])
+}
+
+model EmailTemplate {
+  id        String   @id @default(cuid())
+  key       String   @unique        // "SESSION_CREATED_STUDENT" and "SESSION_CREATED_TUTOR"
+  name      String             
+  subject   String
+  body      String                  // Can store HTML or plain text
+  isHtml    Boolean  @default(true)
+  enabled   Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {

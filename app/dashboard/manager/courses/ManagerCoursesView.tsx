@@ -96,7 +96,8 @@ export default function ManagerCoursesView({
       <div>
         <h1 className="text-2xl font-semibold text-gray-900">Courses</h1>
         <p className="text-sm text-gray-600">
-          Create and manage courses. Deleting a course will remove its related requests/sessions.
+          Create and manage courses. Deleting a course will remove its related 
+          requests/sessions.
         </p>
       </div>
 
@@ -205,14 +206,16 @@ export default function ManagerCoursesView({
                   setDeleteOpen(false);
                   setToDelete(null);
                 }}
-                className="rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100"
+                className="rounded-md px-3 py-2 text-sm text-gray-600 
+                  hover:bg-gray-100"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDelete}
                 disabled={deleting}
-                className="rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                className="rounded-md bg-red-600 px-3 py-2 text-sm font-medium 
+                  text-white hover:bg-red-700 disabled:opacity-50"
               >
                 {deleting ? "Deleting..." : "Delete"}
               </button>
