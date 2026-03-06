@@ -21,7 +21,8 @@ export const authOptions: NextAuthOptions = {
       const email = profile.email.toLowerCase().trim();
 
       const managerEmails =
-        process.env.MANAGER_EMAILS?.split(",").map(e => e.trim().toLowerCase()) ?? [];
+        process.env.MANAGER_EMAILS?.split(",")
+        .map(e => e.trim().toLowerCase()) ?? [];
 
       // Check if email exists in TutorProfile
       const tutorProfile = await prisma.tutorProfile.findUnique({

@@ -17,8 +17,6 @@ export default async function TutorsPage() {
   return (
     <div className="mt-8">
       <div className="max-w-5xl mx-auto">
-        {/* TutorsView is a client component that receives server data as initial state */}
-        {/* Passing minimal fields to keep payload small */}
         <ManagerTutorsView
           initialTutors={tutors.map((t) => ({
             id: t.id,

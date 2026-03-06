@@ -18,7 +18,9 @@ export default function TextField({
 }) {
   return (
     <div>
-      <label className="block text-sm font-semibold mb-2">{label}</label>
+      <label className="block text-sm font-semibold mb-2">
+        {label}
+      </label>
       <input
         name={name}
         type={type}

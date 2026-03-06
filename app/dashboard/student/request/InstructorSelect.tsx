@@ -1,6 +1,13 @@
 "use client";
 
-type Instructor = { id: string; name: string; courses: { id: string; name: string }[] };
+type Instructor = { 
+  id: string; 
+  name: string; 
+  courses: { 
+    id: string; 
+    name: string 
+  }[] 
+};
 
 export default function InstructorSelect({
   instructors,

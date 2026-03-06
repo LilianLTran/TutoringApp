@@ -21,18 +21,22 @@ export default function InstructorCoursesEditor({
   const selectedSet = useMemo(() => new Set(selected), [selected]);
 
   function toggle(id: string) {
-    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+    setSelected((prev) => 
+      (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   }
 
   async function save() {
     setSaving(true);
     setMsg(null);
     try {
-      const res = await fetch(`/api/manager/instructors/${instructor.id}/courses`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ courseIds: selected }),
-      });
+      const res = await fetch(
+        `/api/manager/instructors/${instructor.id}/courses`, 
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ courseIds: selected }),
+        }
+      );
 
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error ?? "Failed to save courses");
@@ -49,8 +53,12 @@ export default function InstructorCoursesEditor({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-gray-900">{instructor.name}</h1>
-        <p className="text-sm text-gray-600">Select the courses this instructor teaches.</p>
+        <h1 className="text-2xl font-semibold text-gray-900">
+          {instructor.name}
+        </h1>
+        <p className="text-sm text-gray-600">
+          Select the courses this instructor teaches.
+        </p>
       </div>
 
       <div className="rounded-2xl border bg-white p-5 shadow-sm">
@@ -70,13 +78,16 @@ export default function InstructorCoursesEditor({
                   }
                 }}
                 className={
-                  "flex items-center justify-between rounded-lg border px-3 py-2 transition cursor-pointer " +
+                  "flex items-center justify-between rounded-lg " +
+                  "border px-3 py-2 transition cursor-pointer " +
                   (picked
                       ? "bg-[#FBECE1] border-[#FFB6C1]"
                       : "bg-white border-gray-200 hover:shadow-sm")
                 }
               >
-                <div className="text-sm font-medium text-gray-900">{c.name}</div>
+                <div className="text-sm font-medium text-gray-900">
+                  {c.name}
+                </div>
               </div>
             );
           })}
@@ -85,7 +96,8 @@ export default function InstructorCoursesEditor({
         <button
           onClick={save}
           disabled={saving}
-          className="mt-5 w-full rounded-lg bg-[#99000D] px-4 py-2 text-white disabled:opacity-50"
+          className="mt-5 w-full rounded-lg bg-[#99000D] px-4 py-2 
+            text-white disabled:opacity-50"
         >
           {saving ? "Saving..." : "Save Courses"}
         </button>

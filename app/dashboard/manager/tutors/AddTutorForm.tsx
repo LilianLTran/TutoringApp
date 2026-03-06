@@ -10,7 +10,13 @@ type Props = {
   canCreate: (email: string) => boolean; // duplicate check hook
 };
 
-export default function AddTutorForm({ onCreate, creating, setCreating, setMsg, canCreate }: Props) {
+export default function AddTutorForm({ 
+  onCreate, 
+  creating, 
+  setCreating, 
+  setMsg, 
+  canCreate 
+}: Props) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
@@ -46,7 +52,9 @@ export default function AddTutorForm({ onCreate, creating, setCreating, setMsg, 
     <div className="rounded-2xl border bg-white p-5 shadow-sm">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:items-end">
         <div className="sm:col-span-1">
-          <label className="block text-sm font-medium text-gray-700">Name</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Name
+          </label>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -56,7 +64,9 @@ export default function AddTutorForm({ onCreate, creating, setCreating, setMsg, 
         </div>
 
         <div className="sm:col-span-1">
-          <label className="block text-sm font-medium text-gray-700">Email</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Email
+          </label>
           <input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -70,7 +80,8 @@ export default function AddTutorForm({ onCreate, creating, setCreating, setMsg, 
           <button
             onClick={submit}
             disabled={creating || !name.trim() || !email.trim()}
-            className="min-w-[140px] rounded-lg bg-[#99000D] px-4 py-2 text-white disabled:opacity-50"
+            className="min-w-[140px] rounded-lg bg-[#99000D] px-4 py-2 
+              text-white disabled:opacity-50"
           >
             {creating ? "Adding..." : "Add Tutor"}
           </button>

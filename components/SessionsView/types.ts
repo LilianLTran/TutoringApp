@@ -1,4 +1,5 @@
-export type SessionStatus = "SCHEDULED" | "COMPLETED" | "CANCELLED" | "NO_SHOW";
+export type SessionStatus = 
+  "SCHEDULED" | "COMPLETED" | "CANCELLED" | "NO_SHOW";
 
 export type SessionRow = {
   id: string;

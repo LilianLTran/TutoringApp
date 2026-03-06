@@ -8,7 +8,9 @@ import { TutorRow } from "./types";
 
 export const dynamic = "force-dynamic";
 
-export default function ManagerTutorsView({ initialTutors }: { initialTutors: TutorRow[] }) {
+export default function ManagerTutorsView(
+  { initialTutors }: { initialTutors: TutorRow[] }
+) {
   const [items, setItems] = useState<TutorRow[]>(initialTutors ?? []);
   const [msg, setMsg] = useState<string | null>(null);
 
@@ -18,7 +20,9 @@ export default function ManagerTutorsView({ initialTutors }: { initialTutors: Tu
   const [deleting, setDeleting] = useState(false);
   const [tutorToDelete, setTutorToDelete] = useState<TutorRow | null>(null);
 
-  const sorted = useMemo(() => [...items].sort((a, b) => a.name.localeCompare(b.name)), [items]);
+  const sorted = useMemo(
+    () => [...items].sort((a, b) => a.name.localeCompare(b.name)), [items]
+  );
 
   function canCreate(email: string) {
     return !items.some((t) => t.email.toLowerCase() === email.toLowerCase());
@@ -71,7 +75,7 @@ export default function ManagerTutorsView({ initialTutors }: { initialTutors: Tu
       if (!res.ok) throw new Error(data?.error ?? "Failed to delete tutor");
 
       setItems((prev) => prev.filter((x) => x.id !== tutorToDelete.id));
-      setMsg("Tutor deleted. (If linked user existed, role reverted to STUDENT.)");
+      setMsg("Tutor deleted. (role reverted to STUDENT.)");
       setDeleteOpen(false);
       setTutorToDelete(null);
     } catch (e: any) {
@@ -104,7 +108,13 @@ export default function ManagerTutorsView({ initialTutors }: { initialTutors: Tu
 
       <TutorsTable tutors={sorted} onDeleteClick={openDelete} />
 
-      <DeleteTutorModal open={deleteOpen} tutor={tutorToDelete} deleting={deleting} onCancel={closeDelete} onConfirm={confirmDelete} />
+      <DeleteTutorModal 
+        open={deleteOpen} 
+        tutor={tutorToDelete} 
+        deleting={deleting} 
+        onCancel={closeDelete} 
+        onConfirm={confirmDelete} 
+      />
     </div>
   );
 }

@@ -9,7 +9,10 @@ export default async function Page() {
   await requireRole("MANAGER");
   const sessions = await prisma.tutoringSession.findMany({
     orderBy: [{ date: "desc" }, { startMin: "desc" }],
-    include: { course: { select: { name: true } }, tutor: { select: { name: true, email: true } }, student: { select: { name: true, email: true } } },
+    include: { 
+      course: { select: { name: true } }, 
+      tutor: { select: { name: true, email: true } }, 
+      student: { select: { name: true, email: true } } },
     take: 500,
   });
 

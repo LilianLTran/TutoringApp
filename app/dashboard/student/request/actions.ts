@@ -1,10 +1,14 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-// import { sendStudentEmail, sendTutorEmail } from "@/lib/email";
 import { revalidatePath } from "next/cache";
+
+import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
+import { sendTemplatedEmail } from "@/lib/email/pipeline";
+
+import convertTime from "@/lib/covertTime";
+import { create } from "domain";
 
 function parseDateOnly(dateKey: string) {
   // dateKey must be "YYYY-MM-DD"
@@ -31,7 +35,7 @@ export async function submitTutoringRequest(data: {
   const me = await prisma.user.findUnique({ where: { email } });
   if (!me) throw new Error("User not found");
 
-  // form fields
+  // Form fields
   const fullName = String(data.fullName ?? "");
   const cwid = String(data.cwid ?? "");
   const courseId = String(data.courseId ?? "");
@@ -40,7 +44,6 @@ export async function submitTutoringRequest(data: {
   const location = String(data.location?? "");
   const dssRequire = String(data.dssRequire ?? "");
 
-  // chosen slot fields (from your slot picker)
   const tutorId = String(data.tutorId ?? "");
   const dateKey = String(data.dateKey ?? ""); // "YYYY-MM-DD"
   const startMinRaw = data.startMin;
@@ -53,21 +56,19 @@ export async function submitTutoringRequest(data: {
   const dateOnly = parseDateOnly(dateKey);
   const endMin = startMin + 30;
 
-  // (Optional but recommended) validate slot is actually available
-  // e.g. call your computeTutorAvailableSlots(tutorId, dateOnly) and 
-  // confirm it contains startMin
-
   let created: {
     requestId: string;
     sessionId: string;
     tutorEmail: string;
     tutorName: string;
+    courseName: string;
+    location: string;
   } | null = null;
 
   let createdSessionId: string | null = null;
   try {
     created = await prisma.$transaction(async (tx) => {
-      // create session first (protected by @@unique([tutorId,date,startMin]))
+      // Create session first (protected by @@unique([tutorId,date,startMin]))
       const newSession = await tx.tutoringSession.create({
         data: {
           tutorId,
@@ -86,7 +87,7 @@ export async function submitTutoringRequest(data: {
       });
       createdSessionId = newSession.id;
 
-      // create request linked to this session
+      // Create request linked to this session
       const newRequest = await tx.tutoringRequest.create({
         data: {
           fullName,
@@ -108,6 +109,8 @@ export async function submitTutoringRequest(data: {
         sessionId: newSession.id,
         tutorEmail: newSession.tutor.email,
         tutorName: newSession.tutor.name,
+        courseName: newSession.course.name,
+        location: newSession.location ?? "",
       };
     });
   } catch (err: any) {
@@ -126,28 +129,41 @@ export async function submitTutoringRequest(data: {
     throw err;
   }
 
-  // Only email after DB success
-  // await Promise.all([
-  //   sendStudentEmail({
-  //     to: me.email,
-  //     studentName: fullName || me.name || "Student",
-  //     tutorName: created.tutorName,
-  //     dateKey,
-  //     startMin,
-  //     location,
-  //   }),
-  //   sendTutorEmail({
-  //     to: created.tutorEmail,
-  //     tutorName: created.tutorName,
-  //     studentName: fullName || me.name || "Student",
-  //     studentEmail: me.email,
-  //     dateKey,
-  //     startMin,
-  //     location,
-  //   }),
-  // ]);
+  if (!created) throw new Error("Failed to create session/request");
+  
+  const from = process.env.MAIL_FROM;
+  if (!from) throw new Error("MAIL_FROM is not configured");
 
-  revalidatePath("/dashboard/student"); // or wherever history shows
-  return { ok: true, requestId: created.requestId, 
-    sessionId: created.sessionId };
-}
+  const time = convertTime(startMin);
+
+  await Promise.all([
+    sendTemplatedEmail({
+      from,
+      to: me.email,
+      templateKey: "SESSION_CREATED_STUDENT",
+      variables: {
+        studentName: me.name ?? fullName ?? "Student",
+        tutorName: created.tutorName,
+        courseName: created.courseName,
+        date: dateKey,
+        time,
+        location: created.location,
+      },
+    }),
+
+    sendTemplatedEmail({
+      from,
+      to: created.tutorEmail,
+      templateKey: "SESSION_CREATED_TUTOR",
+      variables: {
+        tutorName: created.tutorName,
+        studentName: me.name ?? fullName ?? "Student",
+        studentEmail: me.email,
+        courseName: created.courseName,
+        date: dateKey,
+        time,
+        location: created.location,
+      },
+    }),
+  ]);
+};

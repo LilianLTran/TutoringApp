@@ -10,8 +10,12 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
   const { id: instructorId } = await ctx.params;
   const { courseIds } = await req.json();
 
-  if (!Array.isArray(courseIds) || !courseIds.every((x) => typeof x === "string")) {
-    return NextResponse.json({ error: "courseIds must be string[]" }, { status: 400 });
+  if (!Array.isArray(courseIds) 
+    || !courseIds.every((x) => typeof x === "string")) {
+    return NextResponse.json(
+      { error: "courseIds must be string[]" }, 
+      { status: 400 }
+    );
   }
 
   const updated = await prisma.instructor.update({

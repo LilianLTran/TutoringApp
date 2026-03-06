@@ -76,18 +76,26 @@ export default function StudentDashboardView({ user, sessions }: Props) {
         <section className="rounded-2xl border bg-white p-6 shadow-sm">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">Student Profile</h2>
-              <p className="mt-1 text-sm text-gray-500">Update your display name.</p>
+              <h2 className="text-lg font-semibold text-gray-900">
+                Student Profile
+              </h2>
+              <p className="mt-1 text-sm text-gray-500">
+                Update your display name.
+              </p>
             </div>
-            <div className="h-10 w-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-semibold">
+            <div className="h-10 w-10 rounded-full bg-gray-900 text-white 
+              flex items-center justify-center font-semibold">
               {(name?.trim()?.[0] ?? user.email[0] ?? "S").toUpperCase()}
             </div>
           </div>
 
           <div className="mt-5 space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Email</label>
-              <div className="mt-1 rounded-lg border bg-gray-50 px-3 py-2 text-sm text-gray-700">
+              <label className="block text-sm font-medium text-gray-700">
+                Email
+              </label>
+              <div className="mt-1 rounded-lg border bg-gray-50 px-3 py-2 
+                text-sm text-gray-700">
                 {user.email}
               </div>
             </div>
@@ -107,7 +115,8 @@ export default function StudentDashboardView({ user, sessions }: Props) {
             <button
               onClick={saveName}
               disabled={saving}
-              className="h-10 w-full rounded-lg bg-[#99000D] text-white disabled:opacity-50 flex items-center justify-center"
+              className="h-10 w-full rounded-lg bg-[#99000D] text-white 
+                disabled:opacity-50 flex items-center justify-center"
             >
               {saving ? "Saving..." : "Save Profile"}
             </button>
@@ -116,14 +125,17 @@ export default function StudentDashboardView({ user, sessions }: Props) {
 
         {/* Request card */}
         <section className="rounded-2xl border bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900">Request Tutoring</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Request Tutoring
+          </h2>
           <p className="mt-1 text-sm text-gray-500">
             Submit a tutoring request for your course and preferred time.
           </p>
 
           <Link
             href="/dashboard/student/request"
-            className="mt-4 h-10 w-full rounded-lg bg-[#99000D] text-white flex items-center justify-center"
+            className="mt-4 h-10 w-full rounded-lg bg-[#99000D] text-white flex 
+              items-center justify-center"
           >
             New Tutoring Request
           </Link>
@@ -131,7 +143,9 @@ export default function StudentDashboardView({ user, sessions }: Props) {
       </div>
 
       {/* Right column: history */}
-      <section className="rounded-2xl border bg-white p-6 shadow-sm lg:col-span-2">
+      <section 
+        className="rounded-2xl border bg-white p-6 shadow-sm lg:col-span-2"
+      >
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">Tutoring History</h2>
@@ -140,13 +154,17 @@ export default function StudentDashboardView({ user, sessions }: Props) {
             </p>
           </div>
           <div className="text-sm text-gray-500">
-            Total: <span className="font-semibold text-gray-900">{sorted.length}</span>
+            Total: 
+            <span className="font-semibold text-gray-900">
+              {sorted.length}
+            </span>
           </div>
         </div>
 
         <div className="mt-5 overflow-hidden rounded-xl border">
           <table className="w-full text-left text-sm">
-            <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-600">
+            <thead className="bg-gray-50 text-xs uppercase tracking-wide 
+              text-gray-600">
               <tr>
                 <th className="px-4 py-3">Date</th>
                 <th className="px-4 py-3">Time</th>
@@ -170,13 +188,18 @@ export default function StudentDashboardView({ user, sessions }: Props) {
                   <td className="px-4 py-3">
                     <span className={statusPill(s.status)}>{s.status}</span>
                   </td>
-                  <td className="px-4 py-3 text-gray-700">{s.location || "—"}</td>
+                  <td className="px-4 py-3 text-gray-700">
+                    {s.location || "—"}
+                  </td>
                 </tr>
               ))}
 
               {sorted.length === 0 && (
                 <tr>
-                  <td className="px-4 py-8 text-center text-gray-500" colSpan={5}>
+                  <td 
+                    className="px-4 py-8 text-center text-gray-500" 
+                    colSpan={5}
+                  >
                     No sessions yet.
                   </td>
                 </tr>

@@ -37,7 +37,14 @@ export default function SessionsView({
         status: newStatus,
         cancelReason: newStatus === "CANCELLED" ? cancelReason : undefined,
       });
-      setRows((prev) => prev.map((p) => (p.id === active.id ? { ...p, status: newStatus } : p)));
+      setRows((prev) => 
+        prev.map((p) => 
+          (p.id === active.id 
+            ? { ...p, status: newStatus } 
+            : p
+          )
+        )
+      );
       setActive(null);
     } catch (err: any) {
       console.error(err);

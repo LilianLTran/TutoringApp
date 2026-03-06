@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { computeTutorAvailableSlots } from "@/app/dashboard/student/request/computeTutorAvailableSlots";
+import { 
+  computeTutorAvailableSlots 
+} from "@/app/dashboard/student/request/computeTutorAvailableSlots";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -8,7 +10,10 @@ export async function GET(req: Request) {
   const dateKey = url.searchParams.get("date"); // must be YYYY-MM-DD
 
   if (!courseId || !dateKey) {
-    return NextResponse.json({ error: "Missing courseId or date" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Missing courseId or date" }, 
+      { status: 400 }
+    );
   }
 
   // find tutors for the course
@@ -17,7 +22,10 @@ export async function GET(req: Request) {
     select: { tutors: { select: { id: true, name: true } } },
   });
 
-  if (!course) return NextResponse.json({ error: "Course not found" }, { status: 404 });
+  if (!course) return NextResponse.json(
+    { error: "Course not found" }, 
+    { status: 404 }
+  );
 
   // compute slots for each tutor in parallel
   const results = await Promise.all(

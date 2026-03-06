@@ -30,7 +30,8 @@ export default function TutorTimeEditModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center 
+        bg-black/30 p-4"
       role="dialog"
       aria-modal="true"
     >
@@ -39,7 +40,8 @@ export default function TutorTimeEditModal({
           <h2 className="text-lg font-semibold">Select Action</h2>
           <button
             onClick={onClose}
-            className="rounded-md px-2 py-1 text-sm text-gray-500 hover:bg-gray-100"
+            className="rounded-md px-2 py-1 text-sm text-gray-500 
+              hover:bg-gray-100"
             aria-label="Close"
           >
             ✕
@@ -51,14 +53,16 @@ export default function TutorTimeEditModal({
             <>
               <button
                 onClick={onAddRecurring}
-                className="w-full rounded-md bg-[#F0B312] py-2 text-white hover:bg-[#99000D]"
+                className="w-full rounded-md bg-[#F0B312] py-2 text-white 
+                  hover:bg-[#99000D]"
               >
                 Add Recurring
               </button>
 
               <button
                 onClick={onAddNonRecurring}
-                className="w-full rounded-md bg-gray-200 py-2 text-gray-700 hover:bg-gray-300"
+                className="w-full rounded-md bg-gray-200 py-2 text-gray-700 
+                  hover:bg-gray-300"
               >
                 Add Extra Date
               </button>
@@ -69,14 +73,16 @@ export default function TutorTimeEditModal({
             <>
               <button
                 onClick={onRemoveRecurring}
-                className="w-full rounded-md bg-[#99000D] py-2 text-white hover:bg-[#B30014]"
+                className="w-full rounded-md bg-[#99000D] py-2 text-white 
+                  hover:bg-[#B30014]"
               >
                 Delete Recurring (Every Week)
               </button>
 
               <button
                 onClick={onRemoveNonRecurring}
-                className="w-full rounded-md bg-red-100 py-2 text-red-700 hover:bg-red-200"
+                className="w-full rounded-md bg-red-100 py-2 text-red-700 
+                  hover:bg-red-200"
               >
                 Delete Only This Date
               </button>
@@ -86,7 +92,8 @@ export default function TutorTimeEditModal({
           {mode === "CLICK_NONRECURRING" && (
             <button
               onClick={onReverseAddNonRecurring}
-              className="w-full rounded-md bg-[#99000D] py-2 text-white hover:bg-[#B30014]"
+              className="w-full rounded-md bg-[#99000D] py-2 text-white 
+                hover:bg-[#B30014]"
             >
               Delete Only This Date
             </button>

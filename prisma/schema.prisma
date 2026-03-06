@@ -114,13 +114,12 @@ model AvailabilityException {
 }
 
 model EmailTemplate {
-  id        String   @id @default(cuid())
-  key       String   @unique        // "SESSION_CREATED_STUDENT" and "SESSION_CREATED_TUTOR"
-  name      String             
-  subject   String
-  body      String                  // Can store HTML or plain text
-  isHtml    Boolean  @default(true)
-  enabled   Boolean  @default(true)
+  id      String           @id @default(cuid())
+  key     EmailTemplateKey @unique
+  subject String
+  body    String // Can store HTML or plain text
+  isHtml  Boolean          @default(true)
+  enabled Boolean          @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -142,4 +141,11 @@ enum SessionStatus {
 enum ExceptionType {
   REMOVE
   ADD
+}
+
+enum EmailTemplateKey {
+  SESSION_CREATED_STUDENT
+  SESSION_CREATED_TUTOR
+  SESSION_CANCELLED_STUDENT
+  SESSION_CANCELLED_TUTOR
 }

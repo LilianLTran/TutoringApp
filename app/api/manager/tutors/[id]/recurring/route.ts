@@ -25,11 +25,20 @@ export async function POST(req: NextRequest, ctx: Ctx) {
   }
 
   // Check variable (optional)
-  if (!tutorId) return NextResponse.json({ error: "Missing tutorId" }, { status: 400 })
+  if (!tutorId) return NextResponse.json(
+    { error: "Missing tutorId" }, 
+    { status: 400 }
+  )
   if (![0,1,2,3,4,5,6].includes(dayOfWeek)) {
     return NextResponse.json({ error: "Invalid dayOfWeek" }, { status: 400 })
   }
-  if (!Number.isFinite(startMin) || !Number.isFinite(endMin) || startMin < 0 || endMin > 24 * 60 || startMin >= endMin) {
+  if (
+    !Number.isFinite(startMin) || 
+    !Number.isFinite(endMin) || 
+    startMin < 0 || 
+    endMin > 24 * 60 || 
+    startMin >= endMin
+  ) {
     return NextResponse.json({ error: "Invalid time range" }, { status: 400 })
   }
 

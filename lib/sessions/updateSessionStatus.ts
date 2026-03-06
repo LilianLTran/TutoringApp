@@ -31,6 +31,13 @@ export async function updateSessionStatus(
 
   if (!session) throw new Error("Session not found.");
 
+  console.log("updateSessionStatus", {
+    sessionId,
+    prev: session.status,
+    next: nextStatus,
+    willEmail: nextStatus === "CANCELLED",
+  });
+
   // Auth rules
   if (actor.role === "TUTOR") {
     if (session.tutorId !== actor.tutorProfileId) {
@@ -47,6 +54,11 @@ export async function updateSessionStatus(
     data: { status: nextStatus },
   });
 
+  const from = process.env.MAIL_FROM;
+  if (!from) {
+    throw new Error("MAIL_FROM is not configured");
+  }
+
   // Email notify rules
   if (nextStatus === "CANCELLED") {
     const dateKey = session.date.toISOString().slice(0, 10);
@@ -55,7 +67,7 @@ export async function updateSessionStatus(
     // Fire emails in parallel (don’t block the DB update)
     await Promise.all([
       sendTemplatedEmail({
-        from: process.env.MAIL_FROM!,
+        from,
         to: session.student.email,
         templateKey: "SESSION_CANCELLED_STUDENT",
         variables: {
@@ -70,7 +82,7 @@ export async function updateSessionStatus(
       }),
 
       sendTemplatedEmail({
-        from:process.env.MAIL_FROM!,
+        from,
         to: session.tutor.email,
         templateKey: "SESSION_CANCELLED_TUTOR",
         variables: {

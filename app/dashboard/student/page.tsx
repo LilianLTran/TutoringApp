@@ -3,7 +3,7 @@ import { requireRole } from "@/lib/requireRole";
 import StudentDashboardView from "./StudentDashboardView";
 
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth"; // adjust path to where your authOptions lives
+import { authOptions } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -39,9 +39,12 @@ export default async function StudentDashboardPage() {
     <div className="px-4 pt-10">
       <div className="max-w-6xl mx-auto space-y-8">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Student Dashboard</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Student Dashboard
+          </h1>
           <p className="mt-1 text-sm text-gray-600">
-            Manage your profile, request tutoring, and review your session history.
+            Manage your profile, request tutoring, 
+            and review your session history.
           </p>
         </div>
 

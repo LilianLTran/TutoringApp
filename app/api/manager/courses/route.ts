@@ -38,7 +38,12 @@ export async function POST(req: NextRequest) {
       data: { name: clean },
       include: {
         _count: {
-          select: { requests: true, sessions: true, tutors: true, instructors: true },
+          select: { 
+            requests: true, 
+            sessions: true, 
+            tutors: true, 
+            instructors: true 
+          },
         },
       },
     });

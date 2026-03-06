@@ -74,7 +74,9 @@ export default function TutorEditForm({ tutor, allCourses }: Props) {
     <div className="max-w-4xl">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold">Edit Tutor</h1>
-        <p className="text-gray-600">Update basic information and assign courses.</p>
+        <p className="text-gray-600">
+          Update basic information and assign courses.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -82,21 +84,26 @@ export default function TutorEditForm({ tutor, allCourses }: Props) {
         <div className="rounded-2xl border bg-white p-5 shadow-sm">
           <h2 className="mb-4 text-lg font-semibold">Basic Info</h2>
 
-          <label className="block text-sm font-medium text-gray-700">Name</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Name
+          </label>
           <input
             className="mt-1 w-full rounded-lg border px-3 py-2"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
 
-          <label className="mt-4 block text-sm font-medium text-gray-700">Email</label>
+          <label className="mt-4 block text-sm font-medium text-gray-700">
+            Email
+          </label>
           <input
             className="mt-1 w-full rounded-lg border px-3 py-2"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          <label className="mt-4 flex items-center gap-2 text-sm text-gray-700">
+          <label className="mt-4 flex items-center gap-2 text-sm 
+            text-gray-700">
             <input
               type="checkbox"
               checked={isActive}
@@ -108,7 +115,8 @@ export default function TutorEditForm({ tutor, allCourses }: Props) {
           <button
             onClick={saveBasic}
             disabled={savingBasic}
-            className="mt-5 w-full rounded-lg bg-[#99000D] px-4 py-2 text-white disabled:opacity-50"
+            className="mt-5 w-full rounded-lg bg-[#99000D] px-4 py-2 
+              text-white disabled:opacity-50"
           >
             {savingBasic ? "Saving..." : "Save Basic Info"}
           </button>

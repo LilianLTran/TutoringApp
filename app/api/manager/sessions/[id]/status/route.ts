@@ -6,7 +6,10 @@ import { requireRole } from "@/lib/requireRole";
 
 import { updateSessionStatus } from "@/lib/sessions/updateSessionStatus";
 
-export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }> }) {
+export async function PATCH(
+  req: Request, 
+  ctx: { params: Promise<{ id: string }> }
+) {
   await requireRole("MANAGER");
   const session = await getServerSession(authOptions);
   const userId = session!.user!.id;

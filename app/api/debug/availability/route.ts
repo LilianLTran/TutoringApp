@@ -1,5 +1,3 @@
-// // app/api/debug/availability/route.ts
-
 // import { NextResponse } from "next/server";
 // import { computeTutorAvailableSlots } from "@/app/dashboard/student/request/computeTutorAvailableSlots";
 

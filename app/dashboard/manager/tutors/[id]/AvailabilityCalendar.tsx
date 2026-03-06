@@ -34,28 +34,45 @@ export default function AvailabilityCalendar({ tutorId }: Props) {
 
   const [modalMode, setModalMode] = useState<ModalMode>("ADD")
   const [clickedId, setClickedId] = useState<string | null>(null)
-  const [clickedKind, setClickedKind] = useState<"RECURRING" | "NONRECURRING" | null>(null)
+  const [clickedKind, setClickedKind] = 
+    useState<"RECURRING" | "NONRECURRING" | null>(null)
 
   const initialDate = useMemo(() => {
     const today = new Date()
     const day = today.getDay()
-    if (day === 6) return new Date(new Date(today).setDate(today.getDate() + 2)) // Sat -> Mon
-    if (day === 0) return new Date(new Date(today).setDate(today.getDate() + 1)) // Sun -> Mon
+    // If today is weekend, set Monday to the next week
+    if (day === 6) 
+      return new Date(new Date(today).setDate(today.getDate() + 2))
+    if (day === 0) 
+      return new Date(new Date(today).setDate(today.getDate() + 1))
     return today
   }, [])
 
   useEffect(() => {
     async function load() {
       const [recRes, exRes] = await Promise.all([
-        fetch(`/api/manager/tutors/${tutorId}/recurring`, { cache: "no-store" }),
-        fetch(`/api/manager/tutors/${tutorId}/nonrecurring`, { cache: "no-store" }),
+        fetch(
+          `/api/manager/tutors/${tutorId}/recurring`, 
+          { cache: "no-store" }
+        ),
+        fetch(
+          `/api/manager/tutors/${tutorId}/nonrecurring`, 
+          { cache: "no-store" }
+        ),
       ])
 
-      const [recurring, exceptions] = await Promise.all([recRes.json(), exRes.json()])
-      const recByDow = new Map<number, Array<Block & { recurringId: string }>>()
+      const [recurring, exceptions] = 
+        await Promise.all([recRes.json(), exRes.json()])
+      const recByDow = 
+        new Map<number, Array<Block & { recurringId: string }>>()
+
       for (const r of recurring) {
         const arr = recByDow.get(r.dayOfWeek) ?? []
-        arr.push({ recurringId: String(r.id), startMin: r.startMin, endMin: r.endMin })
+        arr.push({ 
+          recurringId: String(r.id), 
+          startMin: r.startMin, 
+          endMin: r.endMin 
+        })
         recByDow.set(r.dayOfWeek, arr)
       }
 
@@ -77,7 +94,11 @@ export default function AvailabilityCalendar({ tutorId }: Props) {
 
       const out: any[] = []
 
-      for (let d = new Date(startDate); d < endDate; d.setDate(d.getDate() + 1)) {
+      for (
+        let d = new Date(startDate); 
+        d < endDate; 
+        d.setDate(d.getDate() + 1)
+      ) {
         const day = new Date(d)
         const dow = day.getDay()
         const k = dayKey(day)
@@ -93,14 +114,18 @@ export default function AvailabilityCalendar({ tutorId }: Props) {
 
         for (const baseBlock of base) {
           // Start with the recurring block as the base
-          let blocks: Block[] = [{ startMin: baseBlock.startMin, endMin: baseBlock.endMin }]
+          let blocks: Block[] = [{ 
+            startMin: baseBlock.startMin, 
+            endMin: baseBlock.endMin 
+          }]
 
           blocks = subtractMany(blocks, removes)
 
           // Convert remaining blocks into events
           for (const b of blocks) {
             out.push({
-              id: `occ:${baseBlock.recurringId}:${k}:${b.startMin}:${b.endMin}`,
+              id: `occ:${baseBlock.recurringId}:` + 
+                `${k}:${b.startMin}:${b.endMin}`,
               start: minsToDate(day, b.startMin),
               end: minsToDate(day, b.endMin),
               backgroundColor: RECURRING_COLOR,  
@@ -117,7 +142,8 @@ export default function AvailabilityCalendar({ tutorId }: Props) {
           }
         }
 
-        // Also include ADD exceptions that happen on days with no recurring blocks at all
+        // Also include ADD exceptions that happen on days with 
+        // no recurring blocks at all
         for (const ex of adds) {
           out.push({
             id: String(ex.id),
@@ -254,7 +280,8 @@ export default function AvailabilityCalendar({ tutorId }: Props) {
       setClickedKind("RECURRING")
       setModalMode("CLICK_RECURRING")
     } else {
-      // For nonrecurring blocks created from exceptions, prefer exceptionId if present.
+      // For nonrecurring blocks created from exceptions, 
+      // prefer exceptionId if present.
       setClickedId(String(p.exceptionId ?? info.event.id))
       setClickedKind("NONRECURRING")
       setModalMode("CLICK_NONRECURRING")

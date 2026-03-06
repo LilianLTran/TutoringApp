@@ -28,7 +28,11 @@ export default function CoursePanel({
   const selectedSet = useMemo(() => new Set(selected), [selected]);
 
   function toggleCourse(id: string) {
-    setSelected(selectedSet.has(id) ? selected.filter((x) => x !== id) : [...selected, id]);
+    setSelected(
+      selectedSet.has(id) 
+        ? selected.filter((x) => x !== id) 
+        : [...selected, id]
+      );
   }
 
   return (
@@ -36,7 +40,9 @@ export default function CoursePanel({
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold">Courses</h2>
-          <p className="mt-1 text-sm text-gray-500">Select courses this tutor can teach.</p>
+          <p className="mt-1 text-sm text-gray-500">
+            Select courses this tutor can teach.
+          </p>
         </div>
       </div>
 
@@ -58,7 +64,8 @@ export default function CoursePanel({
                     }
                   }}
                   className={
-                    "flex items-center justify-between gap-3 rounded-lg border px-3 py-2 transition " +
+                    "flex items-center justify-between gap-3 rounded-lg " +
+                    "border px-3 py-2 transition " +
                     (checked
                       ? "bg-[#FBECE1] border-[#FFB6C1]"
                       : "bg-white border-gray-200 hover:shadow-sm")
@@ -72,7 +79,8 @@ export default function CoursePanel({
             })}
 
             {courses.length === 0 && (
-              <div className="rounded-lg border border-dashed bg-white p-4 text-sm text-gray-500">
+              <div className="rounded-lg border border-dashed bg-white p-4 
+                text-sm text-gray-500">
                 No courses yet.
               </div>
             )}
@@ -83,7 +91,8 @@ export default function CoursePanel({
       <button
         onClick={onSave}
         disabled={saving}
-        className="mt-5 w-full rounded-lg bg-[#99000D] px-4 py-2 text-white disabled:opacity-50"
+        className="mt-5 w-full rounded-lg bg-[#99000D] px-4 py-2 text-white 
+          disabled:opacity-50"
       >
         {saving ? "Saving..." : "Save Courses"}
       </button>

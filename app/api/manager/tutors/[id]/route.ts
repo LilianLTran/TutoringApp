@@ -13,7 +13,10 @@ export async function GET(req: NextRequest, ctx: Ctx) {
     include: { courses: true },
   })
 
-  if (!tutor) return NextResponse.json({ error: "Tutor not found" }, { status: 404 })
+  if (!tutor) return NextResponse.json(
+    { error: "Tutor not found" }, 
+    { status: 404 }
+  )
   return NextResponse.json(tutor)
 }
 

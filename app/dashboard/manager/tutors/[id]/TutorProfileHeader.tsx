@@ -16,7 +16,8 @@ export default function TutorProfileHeader({
   return (
     <div className="flex items-center gap-4 mb-6 pl-4">
       <div
-        className="h-12 w-12 rounded-full text-white flex items-center justify-center font-semibold text-lg"
+        className="h-12 w-12 rounded-full text-white flex items-center 
+          justify-center font-semibold text-lg"
         style={{ backgroundColor: accentColor }}
       >
         {initial}

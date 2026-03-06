@@ -7,7 +7,10 @@ import { authOptions } from "@/lib/auth";
 
 import { updateSessionStatus } from "@/lib/sessions/updateSessionStatus";
 
-export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }> }) {
+export async function PATCH(
+  req: Request, 
+  ctx: { params: Promise<{ id: string }> }
+) {
   await requireRole("TUTOR");
 
   const session = await getServerSession(authOptions);
@@ -19,7 +22,10 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
     select: { id: true },
   });
   if (!tutorProfile) {
-    return NextResponse.json({ error: "Tutor profile not found." }, { status: 404 });
+    return NextResponse.json(
+      { error: "Tutor profile not found." }, 
+      { status: 404 }
+    );
   }
 
   const { id: sessionId } = await ctx.params;

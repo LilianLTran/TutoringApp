@@ -14,16 +14,23 @@ export default async function Page() {
   await requireRole("TUTOR");
   const session = await getServerSession(authOptions);
   const email = session?.user?.email?.toLowerCase();
-  const user = await prisma.user.findUnique({ where: { email }, select: { id: true } });
+  const user = await prisma.user.findUnique({ 
+    where: { email }, 
+    select: { id: true } 
+  });
   if (!user) return <div className="p-6">User not found</div>;
 
-  const tutorProfile = await prisma.tutorProfile.findUnique({ where: { userId: user.id }});
+  const tutorProfile = await prisma.tutorProfile.findUnique({ 
+    where: { userId: user.id }
+  });
   if (!tutorProfile) return <div className="p-6">No tutor profile</div>;
 
   const sessions = await prisma.tutoringSession.findMany({
     where: { tutorId: tutorProfile.id },
     orderBy: [{ date: "desc" }, { startMin: "desc" }],
-    include: { course: { select: { name: true } }, student: { select: { name: true, email: true } } },
+    include: { 
+      course: { select: { name: true } }, 
+      student: { select: { name: true, email: true } } },
   });
 
   const rows = sessions.map(s => ({

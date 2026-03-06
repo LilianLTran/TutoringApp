@@ -14,7 +14,10 @@ export async function updateSessionStatus(input: {
   if (!sess?.user) throw new Error("Not authenticated");
 
   // Fetch session first
-  const s = await prisma.tutoringSession.findUnique({ where: { id: input.sessionId }, include: { tutor: { select: { id: true, userId: true } } }});
+  const s = await prisma.tutoringSession.findUnique({
+    where: { id: input.sessionId }, 
+    include: { tutor: { select: { id: true, userId: true } } }
+  });
   if (!s) throw new Error("Session not found");
 
   // Manager can always update
@@ -29,7 +32,10 @@ export async function updateSessionStatus(input: {
   }
 
   // proceed to update
-  const updated = await prisma.tutoringSession.update({ where: { id: input.sessionId }, data: { status: input.status } });
+  const updated = await prisma.tutoringSession.update({ 
+    where: { id: input.sessionId }, 
+    data: { status: input.status } 
+  });
 
   // if cancelled -> trigger notify pipeline (send email)
   if (input.status === "CANCELLED") {

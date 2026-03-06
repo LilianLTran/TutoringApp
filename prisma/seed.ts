@@ -1,126 +1,85 @@
-import { PrismaClient } from "@prisma/client"
-import { Pool } from "pg"
-import { PrismaPg } from "@prisma/adapter-pg"
+import { EmailTemplateKey } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
-}
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-})
-
-const adapter = new PrismaPg(pool)
-
-export const prisma =
-  globalForPrisma.prisma ?? new PrismaClient({
-    adapter,
-  })
-
+const REQUIRED_TEMPLATES: Array<{
+  key: EmailTemplateKey;
+  subject: string;
+  body: string;
+  isHtml?: boolean;
+  enabled?: boolean;
+}> = [
+  {
+    key: "SESSION_CREATED_STUDENT",
+    subject: "Tutoring session confirmed: {{courseName}}",
+    body: 
+`<p>Hi {{studentName}},</p>
+<p>Your tutoring session with {{tutorName}} is confirmed.</p>
+<p><b>Date:</b> {{date}}<br/>
+<b>Time:</b> {{time}}<br/>
+<b>Location:</b> {{location}}</p>`,
+    isHtml: true,
+    enabled: true,
+  },
+  {
+    key: "SESSION_CREATED_TUTOR",
+    subject: "New tutoring session: {{courseName}}",
+    body: 
+`<p>Hi {{tutorName}},</p>
+<p>You have a new session with {{studentName}} ({{studentEmail}}).</p>
+<p><b>Date:</b> {{date}}<br/>
+<b>Time:</b> {{time}}<br/>
+<b>Location:</b> {{location}}</p>`,
+    isHtml: true,
+    enabled: true,
+  },
+  {
+    key: "SESSION_CANCELLED_STUDENT",
+    subject: "Session cancelled: {{courseName}}",
+    body: 
+`<p>Hi {{studentName}},</p>
+<p>Your session with {{tutorName}} was cancelled.</p>
+<p><b>Date:</b> {{date}}<br/>
+<b>Time:</b> {{time}}<br/>
+<b>Location:</b> {{location}}</p>
+<p><b>Reason:</b> {{reason}}</p>`,
+    isHtml: true,
+    enabled: true,
+  },
+  {
+    key: "SESSION_CANCELLED_TUTOR",
+    subject: "Session cancelled: {{courseName}}",
+    body: 
+`<p>Hi {{tutorName}},</p>
+<p>Your session with {{studentName}} was cancelled.</p>
+<p><b>Date:</b> {{date}}<br/>
+<b>Time:</b> {{time}}<br/>
+<b>Location:</b> {{location}}</p>
+<p><b>Reason:</b> {{reason}}</p>`,
+isHtml: true,
+    enabled: true,
+  },
+];
 
 async function main() {
-  console.log("Seeding database...")
-
-  // Clean old data
-  await prisma.tutoringSession.deleteMany()
-  await prisma.availabilityException.deleteMany()
-  await prisma.tutorProfile.deleteMany()
-  await prisma.user.deleteMany()
-  await prisma.course.deleteMany()
-
-  //
-  // Create Courses
-  //
-  const math = await prisma.course.create({
-    data: { name: "Math 101" },
-  })
-
-  const physics = await prisma.course.create({
-    data: { name: "Physics 201" },
-  })
-
-  //
-  // Create Tutor Profiles (Manager-created)
-  //
-  const tutorAlice = await prisma.tutorProfile.create({
-    data: {
-      name: "Alice Johnson",
-      email: "alice@school.edu",
-      courses: {
-        connect: [{ id: math.id }],
+  for (const t of REQUIRED_TEMPLATES) {
+    await prisma.emailTemplate.upsert({
+      where: { key: t.key },
+      create: {
+        key: t.key,
+        subject: t.subject,
+        body: t.body,
+        isHtml: t.isHtml ?? true,
+        enabled: t.enabled ?? true,
       },
-    },
-  })
-
-  const tutorBob = await prisma.tutorProfile.create({
-    data: {
-      name: "Bob Smith",
-      email: "bob@school.edu",
-      courses: {
-        connect: [{ id: physics.id }],
-      },
-    },
-  })
-
-  //
-  // Create Availability
-  //
-  // await prisma.availabilityException.createMany({
-  //   data: [
-  //     {
-  //       tutorId: tutorAlice.id,
-  //       date: 1, // Monday
-  //       startMin: 9 * 60,
-  //       endMin: 12 * 60,
-  //     },
-  //     {
-  //       tutorId: tutorBob.id,
-  //       dayOfWeek: 2, // Tuesday
-  //       startMin: 13 * 60,
-  //       endMin: 16 * 60,
-  //     },
-  //   ],
-  // })
-
-  //
-  // Create Tutor User (simulate signup)
-  //
-  const tutorUser = await prisma.user.create({
-    data: {
-      email: "alice@school.edu",
-      name: "Alice Johnson",
-      role: "TUTOR",
-    },
-  })
-
-  // Auto-link logic
-  await prisma.tutorProfile.update({
-    where: { email: tutorUser.email },
-    data: {
-      userId: tutorUser.id,
-      isActive: true,
-    },
-  })
-
-  //
-  // Create Student User
-  //
-  await prisma.user.create({
-    data: {
-      email: "student1@school.edu",
-      name: "Student One",
-      role: "STUDENT",
-    },
-  })
-
-  console.log("Seeding completed.")
+      update: {}, // don't overwrite manager edits
+    });
+  }
 }
 
 main()
-  .catch((e) => {
-    console.error(e)
-    process.exit(1)
-  })
-  .finally(async () => {
-    await prisma.$disconnect()
-  })
+  .finally(async () => prisma.$disconnect())
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

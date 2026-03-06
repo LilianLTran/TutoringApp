@@ -14,7 +14,10 @@ export async function GET(req: NextRequest, ctx: Ctx) {
   });
 
   if (!tutor) {
-    return NextResponse.json({ error: "Tutor not found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "Tutor not found" }, 
+      { status: 404 }
+    );
   }
 
   return NextResponse.json({ courses: tutor.courses });
@@ -26,8 +29,12 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
 
   const { courseIds } = await req.json();
 
-  if (!Array.isArray(courseIds) || !courseIds.every((x) => typeof x === "string")) {
-    return NextResponse.json({ error: "courseIds must be string[]" }, { status: 400 });
+  if (!Array.isArray(courseIds) 
+    || !courseIds.every((x) => typeof x === "string")) {
+    return NextResponse.json(
+      { error: "courseIds must be string[]" }, 
+      { status: 400 }
+    );
   }
 
   const updated = await prisma.tutorProfile.update({

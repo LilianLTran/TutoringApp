@@ -10,7 +10,10 @@ export async function DELETE(req: NextRequest, ctx: Ctx) {
   const { id: tutorId, courseId } = await ctx.params;
 
   if (!tutorId || !courseId) {
-    return NextResponse.json({ error: "Missing tutorId or courseId" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Missing tutorId or courseId" }, 
+      { status: 400 }
+    );
   }
 
   const updated = await prisma.tutorProfile.update({

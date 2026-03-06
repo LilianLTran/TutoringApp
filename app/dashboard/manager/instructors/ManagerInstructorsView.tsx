@@ -39,9 +39,14 @@ export default function ManagerInstructorsView({
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data?.error ?? "Failed to create instructor");
+      if (!res.ok) 
+        throw new Error(data?.error ?? "Failed to create instructor");
 
-      setItems((prev) => [{ id: data.id, name: data.name, courses: [] }, ...prev]);
+      setItems((prev) => [
+        { id: data.id, 
+          name: data.name, 
+          courses: [] }, ...prev
+      ]);
 
       setName("");
     } catch (e: any) {
@@ -66,7 +71,8 @@ export default function ManagerInstructorsView({
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data?.error ?? "Failed to delete instructor");
+      if (!res.ok) 
+        throw new Error(data?.error ?? "Failed to delete instructor");
 
       setItems((prev) => prev.filter((x) => x.id !== toDelete.id));
 
@@ -89,7 +95,8 @@ export default function ManagerInstructorsView({
 
       {/* Add instructor */}
       <div className="rounded-2xl border bg-white p-5 shadow-sm">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end 
+          sm:justify-between">
           <div className="w-full">
             <label className="block text-sm font-medium text-gray-700">
               New instructor name
@@ -103,7 +110,8 @@ export default function ManagerInstructorsView({
           </div>
 
           <button
-            className="min-w-[160px] rounded-lg bg-[#99000D] px-4 py-2 text-white"
+            className="min-w-[160px] rounded-lg bg-[#99000D] px-4 py-2 
+              text-white"
             onClick={addInstructor}
             disabled={creating || !name.trim()}
           >
@@ -113,9 +121,11 @@ export default function ManagerInstructorsView({
       </div>
 
       {/* List */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 
+        overflow-hidden">
         <table className="w-full text-sm text-left">
-          <thead className="bg-gray-50 text-gray-600 uppercase text-xs tracking-wide">
+          <thead className="bg-gray-50 text-gray-600 uppercase text-xs 
+            tracking-wide">
             <tr>
               <th className="px-5 py-3">Instructor</th>
               <th className="px-5 py-3">Courses</th>
@@ -143,7 +153,8 @@ export default function ManagerInstructorsView({
                       {ins.courses.map((c) => (
                         <span
                           key={c.id}
-                          className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700"
+                          className="rounded-full bg-gray-100 px-2 py-1 text-xs 
+                            text-gray-700"
                         >
                           {c.name}
                         </span>
@@ -155,7 +166,8 @@ export default function ManagerInstructorsView({
                 <td className="px-5 py-4 text-right">
                   <button
                     onClick={() => openDelete(ins)}
-                    className="rounded-md px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50"
+                    className="rounded-md px-3 py-1.5 text-xs font-medium 
+                      text-red-700 hover:bg-red-50"
                   >
                     Delete
                   </button>
@@ -165,7 +177,10 @@ export default function ManagerInstructorsView({
 
             {sorted.length === 0 && (
               <tr>
-                <td className="px-5 py-10 text-center text-gray-500" colSpan={3}>
+                <td 
+                  className="px-5 py-10 text-center text-gray-500" 
+                  colSpan={3}
+                >
                   No instructors yet.
                 </td>
               </tr>
@@ -176,7 +191,8 @@ export default function ManagerInstructorsView({
 
       {/* Delete confirm modal */}
       {deleteOpen && toDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center 
+          bg-black/40 p-4">
           <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
             <div className="flex items-start justify-between gap-3">
               <h3 className="text-lg font-semibold">Delete Instructor</h3>
@@ -185,7 +201,8 @@ export default function ManagerInstructorsView({
                   setDeleteOpen(false);
                   setToDelete(null);
                 }}
-                className="rounded-md px-2 py-1 text-sm text-gray-500 hover:bg-gray-100"
+                className="rounded-md px-2 py-1 text-sm text-gray-500 
+                  hover:bg-gray-100"
               >
                 ✕
               </button>
@@ -195,9 +212,13 @@ export default function ManagerInstructorsView({
               Delete <span className="font-semibold">{toDelete.name}</span>?
             </p>
 
-            <div className="mt-3 rounded-lg border bg-gray-50 p-3 text-xs text-gray-600">
+            <div className="mt-3 rounded-lg border bg-gray-50 p-3 text-xs 
+              text-gray-600">
               This will also remove their association with{" "}
-              <span className="font-semibold">{toDelete.courses.length}</span> course(s).
+              <span 
+                className="font-semibold">{toDelete.courses.length}
+              </span> 
+              course(s).
               Requests linked to this instructor will also be deleted.
             </div>
 
@@ -207,14 +228,16 @@ export default function ManagerInstructorsView({
                   setDeleteOpen(false);
                   setToDelete(null);
                 }}
-                className="rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100"
+                className="rounded-md px-3 py-2 text-sm text-gray-600 
+                  hover:bg-gray-100"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDelete}
                 disabled={deleting}
-                className="rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                className="rounded-md bg-red-600 px-3 py-2 text-sm font-medium 
+                  text-white hover:bg-red-700 disabled:opacity-50"
               >
                 {deleting ? "Deleting..." : "Delete"}
               </button>

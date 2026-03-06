@@ -11,7 +11,8 @@ type Props = {
 export default function TutorCoursesCard({ tutorId, email, isActive }: Props) {
   return (
     <Link href={`/dashboard/manager/tutors/${tutorId}/edit`} className="block">
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-gray-300 transition cursor-pointer">
+      <section className="bg-white rounded-2xl shadow-sm border border-gray-200 
+        p-6 hover:shadow-md hover:border-gray-300 transition cursor-pointer">
         <h2 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
           Basic Info
         </h2>
