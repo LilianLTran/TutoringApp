@@ -30,7 +30,8 @@ export default function SlotSelect({
   return (
     <div className="mt-4">
       <label className="block text-sm font-semibold mb-2">
-        Available slots
+        At what time? (Please sign up at lease two hours in advance, 
+        one session per day)
       </label>
       {loadingSlots && <div className="text-sm text-gray-500">
         Loading slots…
