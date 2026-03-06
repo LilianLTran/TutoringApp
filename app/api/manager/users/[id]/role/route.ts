@@ -50,7 +50,8 @@ export async function PATCH(
     where: { id: targetUserId },
     select: { role: true },
   });
-  if (!current) return NextResponse.json({ error: "User not found" }, { status: 404 });
+  if (!current) 
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
   if (current.role === "TUTOR" && nextRole === "STUDENT") {
     return NextResponse.json(
       { error: "Tutors can only be promoted to MANAGER here." },
