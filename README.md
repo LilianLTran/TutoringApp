@@ -300,16 +300,19 @@ Templates support dynamic variables:
 
 ## 🌐 Deployment
 
-Recommended free hosting stack:
-| Component | Platform |
-|:----------|:----------|
-| 💻 App | Vercel |
-| ✉️ Email | SendGrid / Gmail SMTP |
+### Recommended free hosting stack:
+
+- 💻 **App**  
+  ![Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)
+
+- ✉️ **Email**  
+  ![SendGrid](https://img.shields.io/badge/Email-SendGrid-blue?logo=sendgrid)
+  ![Gmail SMTP](https://img.shields.io/badge/SMTP-Gmail-red?logo=gmail)
 
 
 ### Production Checklist
--	Set NEXTAUTH_URL to production domain
--	Set NEXTAUTH_SECRET
+-	Set `NEXTAUTH_URL` to production domain
+-	Set `NEXTAUTH_SECRET`
 -	Configure OAuth callback URLs
 -	Add SMTP credentials in hosting dashboard
 ---
