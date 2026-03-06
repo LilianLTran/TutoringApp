@@ -1,14 +1,40 @@
 import { NextAuthOptions } from "next-auth"
-import GoogleProvider from "next-auth/providers/google"
+
+import GoogleProvider from "next-auth/providers/google";
+import AzureADProvider from "next-auth/providers/azure-ad";
+
 import { prisma } from "@/lib/prisma"
 
-export const authOptions: NextAuthOptions = {
-  providers: [
+const providers = [];
+
+if (
+  process.env.GOOGLE_CLIENT_ID &&
+  process.env.GOOGLE_CLIENT_SECRET
+) {
+  providers.push(
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-  ],
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    })
+  );
+}
+
+if (
+  process.env.AZURE_AD_CLIENT_ID &&
+  process.env.AZURE_AD_CLIENT_SECRET &&
+  process.env.AZURE_AD_TENANT_ID
+) {
+  providers.push(
+    AzureADProvider({
+      clientId: process.env.AZURE_AD_CLIENT_ID,
+      clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
+      tenantId: process.env.AZURE_AD_TENANT_ID,
+    })
+  );
+}
+
+export const authOptions: NextAuthOptions = {
+  providers,
 
   session: {
     strategy: "jwt",
