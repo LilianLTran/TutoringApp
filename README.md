@@ -182,19 +182,60 @@ npm install
 Create a .env file in project root:
 
 ```bash
-# Database
+# *********************************************
+# 🗄 DATABASE
+#
+# PostgreSQL connection string
+# Format:
+# postgresql://USERNAME:PASSWORD@HOST:PORT/DATABASE?schema=public
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DBNAME?schema=public"
 
-# Authentication
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="GENERATE_LONG_RANDOM_STRING"
 
-# Email (SMTP)
-SMTP_HOST="smtp.gmail.com"
+# *********************************************
+#
+# 🔐 AUTHENTICATION PROVIDERS
+# At least ONE provider must be configured.
+# Leave unused providers blank.
+
+# --- Google OAuth ---
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# --- Microsoft Azure AD (Entra ID) ---
+AZURE_AD_CLIENT_ID=
+AZURE_AD_CLIENT_SECRET=
+AZURE_AD_TENANT_ID=
+
+# NextAuth Configuration
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="GENERATE_A_SECURE_RANDOM_STRING"
+
+
+# *********************************************
+# 👨‍💼 ROLE CONFIGURATION
+#
+# Comma-separated list of manager emails.
+# Users whose email matches will be assigned MANAGER role.
+MANAGER_EMAILS="manager1@example.com,manager2@example.com"
+
+
+# *********************************************
+# 📧 EMAIL SERVICE (SMTP)
+#
+# Recommended: Use a production email provider such as:
+# - SendGrid
+# - Resend
+# - Amazon SES
+# - Mailgun
+
+# Example configuration for SendGrid SMTP:
+SMTP_HOST="smtp.sendgrid.net"
 SMTP_PORT="587"
-SMTP_USER="your.email@gmail.com"
-SMTP_PASS="your_app_password"
-MAIL_FROM="your.email@gmail.com"
+SMTP_USER="apikey"
+SMTP_PASS="YOUR_SENDGRID_API_KEY"
+
+# Sender address (must be verified with your email provider)
+MAIL_FROM="no-reply@yourdomain.com"
 ```
 
 Generate secret:
