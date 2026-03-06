@@ -1,4 +1,3 @@
-// app/dashboard/manager/sessions/page.tsx
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/requireRole";
 import SessionsView from "@/components/SessionsView/SessionsView";

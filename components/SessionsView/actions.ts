@@ -3,6 +3,13 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import convertTime from "@/lib/covertTime";
+import { dayKey } from "@/lib/dateNormalization";
+
+import { 
+  emailStudentSessionCancelled,
+  emailTutorSessionCancelled
+} from "@/lib/email/notify";
 
 export async function updateSessionStatus(input: {
   sessionId: string;
@@ -16,7 +23,11 @@ export async function updateSessionStatus(input: {
   // Fetch session first
   const s = await prisma.tutoringSession.findUnique({
     where: { id: input.sessionId }, 
-    include: { tutor: { select: { id: true, userId: true } } }
+    include: { 
+      tutor: { select: { id: true, userId: true, name: true, email: true } },
+      student: { select: { id: true, name: true, email: true } },
+      course: { select: { name: true } },
+    }
   });
   if (!s) throw new Error("Session not found");
 
@@ -39,7 +50,39 @@ export async function updateSessionStatus(input: {
 
   // if cancelled -> trigger notify pipeline (send email)
   if (input.status === "CANCELLED") {
-    // call your notify function (emails)
+    const from = process.env.MAIL_FROM;
+    if (!from) throw new Error("MAIL_FROM is not configured");
+
+    const date = dayKey(s.date);
+    const time = convertTime(s.startMin);
+    const location = s.location ?? "";
+    const reason = input.cancelReason ?? "";
+
+    await Promise.all([
+      emailStudentSessionCancelled({
+        from,
+        to: s.student.email,
+        tutorName: s.tutor.name,
+        studentName: s.student.name ?? "Student",
+        courseName: s.course.name,
+        date,
+        time,
+        location,
+        reason,
+      }),
+      emailTutorSessionCancelled({
+        from,
+        to: s.tutor.email,
+        tutorName: s.tutor.name,
+        studentName: s.student.name ?? "Student",
+        studentEmail: s.student.email,
+        courseName: s.course.name,
+        date,
+        time,
+        location,
+        reason,
+      }),
+    ]);
   }
 
   return { ok: true, sessionId: updated.id };

@@ -36,3 +36,48 @@ export async function emailTutorSessionCreated(args: {
     variables: args,
   });
 }
+
+export async function emailStudentSessionCancelled(args: {
+  from: string;
+  to: string;
+  studentName: string;
+  tutorName: string;
+  courseName: string;
+  date: string;
+  time: string;
+  location: string;
+  reason?: string;
+}) {
+  return sendTemplatedEmail({
+    from: args.from,
+    to: args.to,
+    templateKey: "SESSION_CANCELLED_STUDENT",
+    variables: {
+      ...args,
+      reason: args.reason ?? "",
+    },
+  });
+}
+
+export async function emailTutorSessionCancelled(args: {
+  from: string;
+  to: string;
+  tutorName: string;
+  studentName: string;
+  studentEmail: string;
+  courseName: string;
+  date: string;
+  time: string;
+  location: string;
+  reason?: string;
+}) {
+  return sendTemplatedEmail({
+    from: args.from,
+    to: args.to,
+    templateKey: "SESSION_CANCELLED_TUTOR",
+    variables: {
+      ...args,
+      reason: args.reason ?? "",
+    },
+  });
+}
