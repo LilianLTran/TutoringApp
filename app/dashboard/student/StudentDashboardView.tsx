@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import convertTime from "@/lib/covertTime";
+
 type SessionRow = {
   id: string;
   date: Date;
@@ -18,21 +20,6 @@ type Props = {
   user: { id: string; email: string; name: string };
   sessions: SessionRow[];
 };
-
-function fmt(minFromMn: number) {
-  let period;
-  let h = Math.floor(minFromMn / 60);
-  if (h > 12) {
-    h = h % 12;
-    period = "PM"
-  } else {
-    period = "AM"
-  }
-  const m = minFromMn % 60;
-  const hStr = String(h).padStart(2, "0");
-  const mStr = String(m).padStart(2, "0");
-  return `${hStr}:${mStr} ${period}`;
-}
 
 function statusPill(status: string) {
   const base = "px-2 py-1 rounded-full text-xs font-medium";
@@ -176,7 +163,7 @@ export default function StudentDashboardView({ user, sessions }: Props) {
                      {s.date.toISOString().slice(0, 10)}
                   </td>
                    <td className="px-4 py-3 text-gray-900 font-medium">
-                     {fmt(s.start)} — {fmt(s.end)}
+                     {convertTime(s.start)} — {convertTime(s.end)}
                   </td>
                   <td className="px-4 py-3 text-gray-700">{s.courseName}</td>
                   <td className="px-4 py-3 text-gray-700">{s.tutorName}</td>

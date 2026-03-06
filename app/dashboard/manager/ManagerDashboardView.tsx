@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Users, BookOpen, GraduationCap } from "lucide-react";
+import { Users, BookOpen, GraduationCap, CalendarCheck } from "lucide-react";
 import ActionCard from "./ActionCard";
 import StatTile from "./StatTile";
 
@@ -89,7 +89,7 @@ export default function ManagerDashboardView({ stats }: Props) {
             </div>
 
             {/* Primary Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <ActionCard
                 title="Manage Tutors"
                 description="View profiles, edit availability, activate/deactivate tutors."
@@ -107,6 +107,12 @@ export default function ManagerDashboardView({ stats }: Props) {
                 description="Manage instructor profiles, assignments, and capacity."
                 icon={<GraduationCap className="h-5 w-5 text-gray-800" />}
                 onClick={() => router.push("/dashboard/manager/instructors")}
+              />
+              <ActionCard
+                title="Manage Tutoring Sessions"
+                description="Manage tutoring sessions and their status."
+                icon={<CalendarCheck className="h-5 w-5 text-gray-800" />}
+                onClick={() => router.push("/dashboard/manager/sessions")}
               />
             </div>
           </main>
