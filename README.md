@@ -301,25 +301,10 @@ Templates support dynamic variables:
 ## 🌐 Deployment
 
 Recommended free hosting stack:
-<table width="100%">
-<tr>
-  <td width="150"><strong>Component</strong></td>
-  <td ><strong>Platform</strong></td>
-</tr>
-
-<tr>
-  <td>💻 App</td>
-  <td>Vercel</td>
-</tr>
-
-<tr>
-  <td>✉️ Email</td>
-  <td>
-    SendGrid<br/>
-    Gmail SMTP
-  </td>
-</tr>
-</table>
+| Component | Platform |
+|:----------|:----------|
+| 💻 App | Vercel |
+| ✉️ Email | SendGrid / Gmail SMTP |
 
 
 ### Production Checklist
