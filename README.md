@@ -219,7 +219,7 @@ MANAGER_EMAILS="manager1@example.com,manager2@example.com"
 
 
 # *********************************************
-# 📧 EMAIL SERVICE (SMTP)
+# ✉️ EMAIL SERVICE (SMTP)
 #
 # Recommended: Use a production email provider such as:
 # - SendGrid
