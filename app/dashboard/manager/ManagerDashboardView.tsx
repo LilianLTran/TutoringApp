@@ -6,7 +6,8 @@ import {
   BookOpen, 
   GraduationCap, 
   CalendarCheck, 
-  MailQuestion 
+  MailQuestion,
+  Settings, 
 } from "lucide-react";
 import ActionCard from "./ActionCard";
 import StatTile from "./StatTile";
@@ -137,6 +138,12 @@ export default function ManagerDashboardView({ stats }: Props) {
                 description="Manage auto email content"
                 icon={<MailQuestion className="h-5 w-5 text-gray-800" />}
                 onClick={() => router.push("/dashboard/manager/emails")}
+              />
+              <ActionCard
+                title="Promote/Demote Manager"
+                description="Manage all managers"
+                icon={<Settings className="h-5 w-5 text-gray-800" />}
+                onClick={() => router.push("/dashboard/manager/users")}
               />
             </div>
           </main>
