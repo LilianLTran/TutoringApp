@@ -192,7 +192,6 @@ DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DBNAME?schema=public"
 
 
 # *********************************************
-#
 # 🔐 AUTHENTICATION PROVIDERS
 # At least ONE provider must be configured.
 # Leave unused providers blank.
