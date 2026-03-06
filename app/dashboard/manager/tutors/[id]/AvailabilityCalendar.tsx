@@ -25,6 +25,15 @@ type SelectionInfo = {
 
 type Block = { startMin: number; endMin: number }
 
+function startOfWeekMonday(d: Date) {
+  const x = new Date(d)
+  x.setHours(0, 0, 0, 0)
+  const day = x.getDay()
+  const diff = (day + 6) % 7
+  x.setDate(x.getDate() - diff)
+  return x
+}
+
 export default function AvailabilityCalendar({ tutorId }: Props) {
   const [events, setEvents] = useState<any[]>([])
   const [refreshKey, setRefreshKey] = useState(0)
@@ -86,7 +95,7 @@ export default function AvailabilityCalendar({ tutorId }: Props) {
       }
 
       // Build events for next 3 months
-      const startDate = new Date()
+      const startDate = startOfWeekMonday(initialDate)
       startDate.setHours(0, 0, 0, 0)
 
       const endDate = new Date(startDate)
