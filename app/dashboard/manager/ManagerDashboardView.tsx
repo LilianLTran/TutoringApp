@@ -12,7 +12,13 @@ import {
 import ActionCard from "./ActionCard";
 import StatTile from "./StatTile";
 
+import ProfileCard from "@/components/ProfileCard";
+import { useSaveProfileName } from "@/app/hooks/useSaveProfileName";
+import { useState } from "react";
+
+
 type Props = {
+  user: { id: string; name: string | null; email: string };
   stats: {
     activeTutors: number;
     courses: number;
@@ -20,67 +26,27 @@ type Props = {
   };
 };
 
-export default function ManagerDashboardView({ stats }: Props) {
+export default function ManagerDashboardView({ user, stats }: Props) {
   const router = useRouter();
+
+  const [name, setName] = useState(user.name ?? "");
+  const { saving, msg, saveName } = useSaveProfileName();
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-7xl px-4 py-6 md:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-          {/* Sidebar */}
-          <aside className="rounded-2xl border border-gray-200 bg-white p-5 
-            shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gray-900 text-white flex 
-                items-center justify-center font-semibold">
-                M
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Manager</p>
-                <p className="font-semibold text-gray-900">Dashboard</p>
-              </div>
-            </div>
-
-            <div className="mt-6 space-y-2">
-              <button
-                onClick={() => router.push("/dashboard/manager/tutors")}
-                className="w-full rounded-xl px-3 py-2 text-sm font-medium 
-                  text-gray-900 hover:bg-gray-50 flex items-center gap-2"
-              >
-                <Users className="h-4 w-4" />
-                Manage Tutors
-
-              </button>
-
-              <button
-                onClick={() => router.push("/dashboard/manager/courses")}
-                className="w-full rounded-xl px-3 py-2 text-sm font-medium 
-                  text-gray-900 hover:bg-gray-50 flex items-center gap-2"
-              >
-                <BookOpen className="h-4 w-4" />
-                Manage Courses
-              </button>
-
-              <button
-                onClick={() => router.push("/dashboard/manager/instructors")}
-                className="w-full rounded-xl px-3 py-2 text-sm font-medium 
-                  text-gray-900 hover:bg-gray-50 flex items-center gap-2"
-              >
-                <GraduationCap className="h-4 w-4" />
-                Manage Instructors
-              </button>
-            </div>
-
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <p className="text-xs text-gray-500">Quick Tips</p>
-              <ul className="mt-2 space-y-1 text-xs text-gray-600">
-                <li>• Keep tutor availability up to date</li>
-                <li>• Ensure courses have assigned instructors</li>
-                <li>• Review inactive profiles periodically</li>
-              </ul>
-            </div>
-          </aside>
-
+          {/* LEFT COLUMN */}
+          <div className="space-y-6 lg:col-span-1">
+            <ProfileCard
+              roleLabel="Manager"
+              email={user.email}
+              name={name}
+              setName={setName}
+              saving={saving}
+              saveName={() => saveName(name)}
+            />
+          </div>
           {/* Main */}
           <main className="space-y-6">
             {/* Header */}

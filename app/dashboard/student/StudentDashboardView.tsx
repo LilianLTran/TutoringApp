@@ -5,6 +5,9 @@ import { useMemo, useState } from "react";
 
 import convertTime from "@/lib/covertTime";
 
+import ProfileCard from "@/components/ProfileCard";
+import { useSaveProfileName } from "@/app/hooks/useSaveProfileName";
+
 type SessionRow = {
   id: string;
   date: Date;
@@ -37,8 +40,7 @@ function statusPill(status: string) {
 
 export default function StudentDashboardView({ user, sessions }: Props) {
   const [name, setName] = useState(user.name ?? "");
-  const [saving, setSaving] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
+  const { saving, msg, saveName } = useSaveProfileName();
 
   const sorted = useMemo(() => {
     return [...sessions].sort((a, b) => {
@@ -49,79 +51,20 @@ export default function StudentDashboardView({ user, sessions }: Props) {
     });
   }, [sessions]);
 
-  async function saveName() {
-    setMsg(null);
-    setSaving(true);
-    try {
-      const res = await fetch("/api/student/profile", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }), // can be blank
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error ?? "Failed to update profile");
-      setMsg("Profile updated.");
-    } catch (e: any) {
-      setMsg(e?.message ?? "Failed to update profile");
-    } finally {
-      setSaving(false);
-    }
-  }
-
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
       {/* Left column */}
       <div className="space-y-6 lg:col-span-1">
         {/* Profile card */}
-        <section className="rounded-2xl border bg-white p-6 shadow-sm">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">
-                Student Profile
-              </h2>
-              <p className="mt-1 text-sm text-gray-500">
-                Update your display name.
-              </p>
-            </div>
-            <div className="h-10 w-10 rounded-full bg-gray-900 text-white 
-              flex items-center justify-center font-semibold">
-              {(name?.trim()?.[0] ?? user.email[0] ?? "S").toUpperCase()}
-            </div>
-          </div>
 
-          <div className="mt-5 space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <div className="mt-1 rounded-lg border bg-gray-50 px-3 py-2 
-                text-sm text-gray-700">
-                {user.email}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Name <span className="text-gray-400">(optional)</span>
-              </label>
-              <input
-                className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="You can leave this blank"
-              />
-            </div>
-
-            <button
-              onClick={saveName}
-              disabled={saving}
-              className="h-10 w-full rounded-lg bg-[#99000D] text-white 
-                disabled:opacity-50 flex items-center justify-center"
-            >
-              {saving ? "Saving..." : "Save Profile"}
-            </button>
-          </div>
-        </section>
+        <ProfileCard
+          roleLabel="Student"
+          email={user.email}
+          name={name}
+          setName={setName}
+          saving={saving}
+          saveName={() => saveName(name)}
+        />
 
         {/* Request card */}
         <section className="rounded-2xl border bg-white p-6 shadow-sm">
@@ -148,7 +91,9 @@ export default function StudentDashboardView({ user, sessions }: Props) {
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Tutoring History</h2>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Tutoring History
+            </h2>
             <p className="mt-1 text-sm text-gray-500">
               Your scheduled and completed sessions.
             </p>
