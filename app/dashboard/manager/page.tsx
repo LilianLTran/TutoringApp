@@ -30,9 +30,23 @@ export default async function ManagerDashboardPage() {
   ]);
 
   return (
-    <ManagerDashboardView
-      user={user}
-      stats={{ activeTutors, courses, instructors }}
-    />
+    <div className="px-4 pt-10">
+      <div className="max-w-6xl mx-auto space-y-8">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Manager Dashboard
+          </h1>
+          <p className="mt-1 text-sm text-gray-600">
+            Manage tutoring sessions and oversee all related operations.
+          </p>
+        </div>
+
+        <ManagerDashboardView
+          user={user}
+          stats={{ activeTutors, courses, instructors }}
+        />
+      </div>
+    </div>
+
   );
 }
