@@ -235,6 +235,13 @@ SMTP_PASS="YOUR_SENDGRID_API_KEY"
 
 # Sender address (must be verified with your email provider)
 MAIL_FROM="no-reply@yourdomain.com"
+
+# # Example configuration for Google SMTP
+# SMTP_HOST="smtp.gmail.com"
+# SMTP_PORT="587"
+# SMTP_USER="<email_address>@gmail.com"
+# SMTP_PASS="YOUR_GOOGLE_API_KEY"
+# MAIL_FROM="<email_address>@gmail.com"
 ```
 
 Generate secret:
